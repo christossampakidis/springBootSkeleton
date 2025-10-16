@@ -3,6 +3,7 @@ package com.demoapp.demoapp.controllers;
 import java.util.List;
 import java.util.Map;
 
+import com.demoapp.demoapp.services.HelloService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -24,20 +25,37 @@ import com.demoapp.demoapp.repositories.UserRepository;
 public class HelloController {
     private final UserRepository userRepository;
     private final UserMapper userMapper;
+    private final HelloService helloService;
 
     @Autowired
-    public HelloController(UserRepository userRepository, UserMapper userMapper) {
+    public HelloController(UserRepository userRepository, UserMapper userMapper, HelloService helloService) {
         this.userRepository = userRepository;
         this.userMapper = userMapper;
+        this.helloService = helloService;
     }
 
+    /**
+     * Handles GET requests to the "/hello" endpoint.
+     * <p>
+     * This endpoint is secured and requires the user to be authenticated.
+     * When accessed, it returns a JSON response containing a greeting message
+     * obtained from the {@link HelloService}.
+     * </p>
+     *
+     * @return a {@link ResponseEntity} containing a {@link Map} with a single key "message"
+     *         whose value is the greeting string from {@link HelloService#sayHello()}.
+     */
     @GetMapping("/hello")
     @PreAuthorize("isAuthenticated()")
     public ResponseEntity<Map<String, String>> hello() {
-        Map<String, String> response = Map.of("message", "Hello, World!");
+        Map<String, String> response = Map.of("message", helloService.sayHello());
         return ResponseEntity.ok(response);
     }
 
+    /**
+     *
+     * @return a {@link ResponseEntity} containing a {@link List} of {@link UserResponse}"
+     */
     @GetMapping("/users")
     public ResponseEntity<List<UserResponse>> getAllUsers() {
         try {
