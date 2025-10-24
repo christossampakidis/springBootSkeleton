@@ -3,11 +3,9 @@ package com.demoapp.demoapp.controllers;
 import java.util.List;
 import java.util.Map;
 
-import com.demoapp.demoapp.services.HelloService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.annotation.Secured;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -18,21 +16,19 @@ import com.demoapp.demoapp.entities.UserEntity;
 import com.demoapp.demoapp.mappers.UserMapper;
 import com.demoapp.demoapp.models.UserResponse;
 import com.demoapp.demoapp.repositories.UserRepository;
+import com.demoapp.demoapp.services.HelloService;
 
 @RestController
 @RequestMapping("/api")
 @CrossOrigin(origins = "http://localhost:3000")
 public class HelloController {
-    private final UserRepository userRepository;
-    private final UserMapper userMapper;
-    private final HelloService helloService;
 
     @Autowired
-    public HelloController(UserRepository userRepository, UserMapper userMapper, HelloService helloService) {
-        this.userRepository = userRepository;
-        this.userMapper = userMapper;
-        this.helloService = helloService;
-    }
+    private UserRepository userRepository;
+    @Autowired
+    private UserMapper userMapper;
+    @Autowired
+    private HelloService helloService;
 
     /**
      * Handles GET requests to the "/hello" endpoint.
