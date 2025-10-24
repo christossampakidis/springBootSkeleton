@@ -66,7 +66,6 @@ public class StripeService {
         newInvoice.setCustomerId(customerEntityId);
         newInvoice.setDaysExpire(30L);
         newInvoice.setStripeId(invoice.getId());
-        newInvoice.setInvoiceNumber(invoice.getNumber());
         stripeInvoiceRepository.save(newInvoice);
         Long invoiceId = newInvoice.getId();
         for (Item item : invoiceRequest.getItems()) {
@@ -87,6 +86,9 @@ public class StripeService {
         }
         InvoiceSendInvoiceParams invoiceSendParams = InvoiceSendInvoiceParams.builder().build();
         invoice.sendInvoice(invoiceSendParams);
+        Invoice fetchedInvoice = Invoice.retrieve(invoice.getId());
+        newInvoice.setInvoiceNumber(fetchedInvoice.getNumber());
+        stripeInvoiceRepository.save(newInvoice);
 
     }
 }
