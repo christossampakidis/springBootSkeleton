@@ -6,6 +6,7 @@ import org.springframework.stereotype.Service;
 import com.demoapp.demoapp.entities.StripeCustomer;
 import com.demoapp.demoapp.entities.StripeInvoice;
 import com.demoapp.demoapp.entities.StripeItem;
+import com.demoapp.demoapp.interfaces.PaymentProvider;
 import com.demoapp.demoapp.models.InvoiceRequest;
 import com.demoapp.demoapp.models.InvoiceRequest.Item;
 import com.demoapp.demoapp.repositories.StripeCustomerRepository;
@@ -21,8 +22,8 @@ import com.stripe.param.InvoiceCreateParams;
 import com.stripe.param.InvoiceItemCreateParams;
 import com.stripe.param.InvoiceSendInvoiceParams;
 
-@Service
-public class StripeService {
+@Service("stripe")
+public class StripeService implements PaymentProvider {
 
     @Autowired
     StripeCustomerRepository stripeCustomerRepository;
@@ -37,7 +38,6 @@ public class StripeService {
         String email = invoiceRequest.getEmail();
         StripeCustomer customer = stripeCustomerRepository.findByEmail(email).orElse(null);
         String customerId = null;
-        Long customerEntityId = null;
         if (customer == null) {
             CustomerCreateParams params = CustomerCreateParams
                     .builder()
@@ -49,11 +49,10 @@ public class StripeService {
             StripeCustomer newCustomer = new StripeCustomer();
             newCustomer.setEmail(email);
             newCustomer.setStripeId(customerId);
-            customerEntityId = newCustomer.getId();
+            customer = newCustomer;
             stripeCustomerRepository.save(newCustomer);
         } else {
             customerId = customer.getStripeId();
-            customerEntityId = customer.getId();
         }
         InvoiceCreateParams invoiceParams = InvoiceCreateParams
                 .builder()
@@ -63,7 +62,7 @@ public class StripeService {
                 .build();
         Invoice invoice = Invoice.create(invoiceParams);
         StripeInvoice newInvoice = new StripeInvoice();
-        newInvoice.setCustomerId(customerEntityId);
+        newInvoice.setCustomer(customer);
         newInvoice.setDaysExpire(30L);
         newInvoice.setStripeId(invoice.getId());
         stripeInvoiceRepository.save(newInvoice);
@@ -77,10 +76,10 @@ public class StripeService {
                     .build();
             InvoiceItem stripeItem = InvoiceItem.create(invoiceItemParams);
             StripeItem newItem = new StripeItem();
-            newItem.setCustomerId(customerEntityId);
+            newItem.setCustomer(customer);
             newItem.setInvoiceId(invoiceId);
             newItem.setStripeId(stripeItem.getId());
-            newItem.setAmount(item.getAmount() * 100);
+            newItem.setAmount(item.getAmount());
             newItem.setCurrency("EUR");
             stripeItemRepository.save(newItem);
         }

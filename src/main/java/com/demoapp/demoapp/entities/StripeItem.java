@@ -4,9 +4,12 @@ import java.util.Date;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import jakarta.persistence.Temporal;
 import jakarta.persistence.TemporalType;
@@ -19,8 +22,9 @@ public class StripeItem {
     @Column(name = "id", nullable = false)
     Long id;
 
-    @Column(name = "customer_id", nullable = false)
-    Long customerId;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "customer_id", nullable = false)
+    private StripeCustomer customer;
 
     @Column(name = "invoice_id", nullable = false)
     Long invoiceId;
@@ -46,16 +50,16 @@ public class StripeItem {
         this.id = id;
     }
 
-    public Long getCustomerId() {
-        return this.customerId;
+    public StripeCustomer getCustomer() {
+        return this.customer;
     }
 
-    public void setCustomerId(Long customerId) {
-        this.customerId = customerId;
+    public void setCustomer(StripeCustomer customer) {
+        this.customer = customer;
     }
 
     public Long getInvoiceId() {
-        return this.customerId;
+        return this.invoiceId;
     }
 
     public void setInvoiceId(Long invoiceId) {

@@ -4,9 +4,12 @@ import java.util.Date;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import jakarta.persistence.Temporal;
 import jakarta.persistence.TemporalType;
@@ -17,19 +20,20 @@ public class StripeInvoice {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", nullable = false)
-    Long id;
+    private Long id;
 
-    @Column(name = "customer_id", nullable = false)
-    Long customerId;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "customer_id", nullable = false)
+    private StripeCustomer customer;
 
     @Column(name = "days_expire", nullable = false)
-    Long daysExpire;
+    private Long daysExpire;
 
     @Column(name = "stripe_id", nullable = false)
-    String stripeId;
+    private String stripeId;
 
     @Column(name = "invoice_number")
-    String invoiceNumber;
+    private String invoiceNumber;
 
     @Column(name = "created_at", insertable = false, updatable = false)
     @Temporal(TemporalType.TIMESTAMP)
@@ -43,12 +47,12 @@ public class StripeInvoice {
         this.id = id;
     }
 
-    public Long getCustomerId() {
-        return this.customerId;
+    public StripeCustomer getCustomer() {
+        return this.customer;
     }
 
-    public void setCustomerId(Long customerId) {
-        this.customerId = customerId;
+    public void setCustomer(StripeCustomer customer) {
+        this.customer = customer;
     }
 
     public Long getDaysExpire() {
