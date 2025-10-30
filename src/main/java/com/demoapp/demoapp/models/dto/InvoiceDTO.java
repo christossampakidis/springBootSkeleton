@@ -2,6 +2,13 @@ package com.demoapp.demoapp.models.dto;
 
 import java.util.Date;
 
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+
+@Getter
+@Setter
+@NoArgsConstructor
 public class InvoiceDTO {
     private Long id;
     private String customerEmail;
@@ -17,24 +24,4 @@ public class InvoiceDTO {
         this.daysExpire = daysExpire;
     }
 
-    // Getters (and setters if needed)
-    public Long getId() {
-        return id;
-    }
-
-    public String getCustomerEmail() {
-        return customerEmail;
-    }
-
-    public String getInvoiceNumber() {
-        return invoiceNumber;
-    }
-
-    public Date getCreatedAt() {
-        return createdAt;
-    }
-
-    public Long getDaysExpire() {
-        return daysExpire;
-    }
 }

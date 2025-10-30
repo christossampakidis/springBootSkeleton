@@ -6,16 +6,16 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.demoapp.demoapp.models.dto.CustomerDTO;
-import com.demoapp.demoapp.repositories.StripeCustomerRepository;
+import com.demoapp.demoapp.repositories.CustomerRepository;
 
 @Service("customers")
 public class CustomersService {
 
     @Autowired
-    private StripeCustomerRepository stripeCustomerRepository;
+    private CustomerRepository CustomerRepository;
 
     public List<CustomerDTO> fetchCustomers() {
-        return stripeCustomerRepository.findAll().stream()
+        return CustomerRepository.findAll().stream()
                 .map(customer -> new CustomerDTO(
                         customer.getId(),
                         customer.getEmail(),

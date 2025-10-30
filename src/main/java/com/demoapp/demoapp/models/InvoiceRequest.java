@@ -2,63 +2,33 @@ package com.demoapp.demoapp.models;
 
 import java.util.List;
 
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+
+@Getter
+@Setter
+@NoArgsConstructor
 public class InvoiceRequest {
 
     private String email;
-    private List<Item> items;
+    private List<ItemDTO> items;
 
-    public String getEmail() {
-        return email;
-    }
-
-    public void setEmail(String email) {
-        this.email = email;
-    }
-
-    public List<Item> getItems() {
-        return items;
-    }
-
-    public void setItems(List<Item> items) {
-        this.items = items;
-    }
-
-    public static class Item {
+    @Getter
+    @Setter
+    @NoArgsConstructor
+    public static class ItemDTO {
         private String name;
         private String description;
         private Long amount;
+        private Long quantity;
 
-        public Item() {
-        }
-
-        public Item(String name, String description, Long amount) {
+        public ItemDTO(String name, String description, Long amount, Long quantity) {
             this.name = name;
             this.description = description;
             this.amount = amount;
+            this.quantity = quantity;
         }
 
-        public String getName() {
-            return name;
-        }
-
-        public void setName(String name) {
-            this.name = name;
-        }
-
-        public void setDescription(String description) {
-            this.description = description;
-        }
-
-        public String getDescription() {
-            return this.description;
-        }
-
-        public Long getAmount() {
-            return amount;
-        }
-
-        public void setAmount(Long amount) {
-            this.amount = amount;
-        }
     }
 }
