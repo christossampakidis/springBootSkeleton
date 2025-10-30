@@ -26,7 +26,7 @@ public class WebHookController {
     @Autowired
     InvoicesService invoicesService;
 
-    @PostMapping
+    @PostMapping("/invoices")
     public ResponseEntity<String> handleStripeEvent(HttpServletRequest request, @RequestBody String payload,
             @RequestHeader("Stripe-Signature") String sigHeader) {
 
