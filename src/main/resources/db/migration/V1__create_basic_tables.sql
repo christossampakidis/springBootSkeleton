@@ -1,13 +1,15 @@
 create table
     customers (
         id bigint auto_increment primary key,
+        `user_id` bigint,
         `name` varchar(255),
         phone varchar(255),
         tax_exempt varchar(255),
         email varchar(255) not null,
         provider_id varchar(255) not null,
         created_at timestamp NULL DEFAULT CURRENT_TIMESTAMP,
-        constraint email_unique unique (email)
+        deleted_at timestamp NULL,
+        constraint provider_id_unique unique (provider_id)
     );
 
 create table
@@ -29,6 +31,7 @@ create table
         days_expire bigint,
         metadata JSON,
         created_at timestamp NULL DEFAULT CURRENT_TIMESTAMP,
+        deleted_at timestamp NULL,
         constraint invoice_customer_id_fk foreign key (customer_id) references customers (id)
     );
 
@@ -42,5 +45,6 @@ create table
         description varchar(255),
         quantity bigint,
         created_at timestamp NULL DEFAULT CURRENT_TIMESTAMP,
+        deleted_at timestamp NULL,
         constraint items_invoice_id_fk foreign key (invoice_id) references invoices (id)
     );

@@ -2,6 +2,9 @@ package com.demoapp.demoapp.entities;
 
 import java.util.Date;
 
+import org.hibernate.annotations.SQLDelete;
+import org.hibernate.annotations.SQLRestriction;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -22,7 +25,9 @@ import lombok.Setter;
 @Getter
 @Setter
 @NoArgsConstructor
-public class Item {
+@SQLDelete(sql = "UPDATE items SET deleted = CURRENT_TIMESTAMP WHERE id=?")
+@SQLRestriction("deleted_at IS NULL")
+public class StripeItem {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -31,7 +36,7 @@ public class Item {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "invoice_id", nullable = false)
-    private Invoice invoice;
+    private StripeInvoice invoice;
 
     @Column(name = "amount", nullable = false)
     private Long amount;
@@ -51,5 +56,8 @@ public class Item {
     @Column(name = "created_at", insertable = false, updatable = false)
     @Temporal(TemporalType.TIMESTAMP)
     private Date createdAt;
+
+    @Column(name = "deleted_at")
+    private Date deletedAt;
 
 }

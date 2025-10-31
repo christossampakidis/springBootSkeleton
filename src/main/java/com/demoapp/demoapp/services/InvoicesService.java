@@ -6,8 +6,8 @@ import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.demoapp.demoapp.entities.Customer;
-import com.demoapp.demoapp.entities.Invoice;
+import com.demoapp.demoapp.entities.StripeCustomer;
+import com.demoapp.demoapp.entities.StripeInvoice;
 import com.demoapp.demoapp.models.dto.InvoiceDTO;
 import com.demoapp.demoapp.repositories.CustomerRepository;
 import com.demoapp.demoapp.repositories.InvoiceRepository;
@@ -49,9 +49,9 @@ public class InvoicesService {
     }
 
     public void updateInvoice(com.stripe.model.Invoice object) {
-        Optional<Invoice> invoice = invoiceRepository.findByProviderId(object.getId());
+        Optional<StripeInvoice> invoice = invoiceRepository.findByProviderId(object.getId());
         if (invoice.isPresent()) {
-            Invoice existingInvoice = invoice.get();
+            StripeInvoice existingInvoice = invoice.get();
             existingInvoice.setInvoiceNumber(object.getNumber());
             existingInvoice.setStatus(object.getStatus());
             existingInvoice.setAmountDue(object.getAmountDue());
@@ -67,8 +67,8 @@ public class InvoicesService {
             existingInvoice.setMetadata(object.toJson());
             invoiceRepository.save(existingInvoice);
         } else {
-            Customer customer = customerRepository.findByProviderId(object.getCustomer()).orElseThrow();
-            Invoice createdInvoice = new Invoice(
+            StripeCustomer customer = customerRepository.findByProviderId(object.getCustomer()).orElseThrow();
+            StripeInvoice createdInvoice = new StripeInvoice(
                     customer,
                     object.getNumber(),
                     object.getStatus(),

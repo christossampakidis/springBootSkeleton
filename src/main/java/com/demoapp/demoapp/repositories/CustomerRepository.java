@@ -5,11 +5,15 @@ import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
-import com.demoapp.demoapp.entities.Customer;
+import com.demoapp.demoapp.entities.StripeCustomer;
 
 @Repository
-public interface CustomerRepository extends JpaRepository<Customer, Long> {
-    Optional<Customer> findByEmail(String email);
+public interface CustomerRepository extends JpaRepository<StripeCustomer, Long> {
+    Optional<StripeCustomer> findByEmail(String email);
 
-    Optional<Customer> findByProviderId(String providerId);
+    Optional<StripeCustomer> findByUserId(Long userId);
+
+    Optional<StripeCustomer> findByProviderId(String providerId);
+
+    void deleteByProviderId(String providerId);
 }

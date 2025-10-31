@@ -2,6 +2,9 @@ package com.demoapp.demoapp.entities;
 
 import java.util.Date;
 
+import org.hibernate.annotations.SQLDelete;
+import org.hibernate.annotations.SQLRestriction;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -23,7 +26,9 @@ import lombok.Setter;
 @Getter
 @Setter
 @NoArgsConstructor
-public class Invoice {
+@SQLDelete(sql = "UPDATE invoices SET deleted = CURRENT_TIMESTAMP WHERE id=?")
+@SQLRestriction("deleted_at IS NULL")
+public class StripeInvoice {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -32,7 +37,7 @@ public class Invoice {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "customer_id", nullable = false)
-    private Customer customer;
+    private StripeCustomer customer;
 
     @Column(name = "invoice_number")
     private String invoiceNumber;
@@ -80,8 +85,11 @@ public class Invoice {
     @Temporal(TemporalType.TIMESTAMP)
     private Date createdAt;
 
-    public Invoice(
-            Customer customer,
+    @Column(name = "deleted_at")
+    private Date deletedAt;
+
+    public StripeInvoice(
+            StripeCustomer customer,
             String invoiceNumber,
             String status,
             String providerId,

@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.demoapp.demoapp.services.CustomersService;
 import com.demoapp.demoapp.services.InvoicesService;
 import com.stripe.exception.SignatureVerificationException;
 import com.stripe.model.Event;
@@ -26,8 +27,11 @@ public class WebHookController {
     @Autowired
     InvoicesService invoicesService;
 
+    @Autowired
+    CustomersService customersService;
+
     @PostMapping("/invoices")
-    public ResponseEntity<String> handleStripeEvent(HttpServletRequest request, @RequestBody String payload,
+    public ResponseEntity<String> handleInvoiceEvents(HttpServletRequest request, @RequestBody String payload,
             @RequestHeader("Stripe-Signature") String sigHeader) {
 
         Event event;
@@ -35,6 +39,22 @@ public class WebHookController {
         try {
             event = Webhook.constructEvent(payload, sigHeader, endpointSecret);
             invoicesService.handleEvent(event);
+        } catch (SignatureVerificationException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Invalid signature");
+        }
+
+        return ResponseEntity.ok("");
+    }
+
+    @PostMapping("/customers")
+    public ResponseEntity<String> handleCustomerEvents(HttpServletRequest request, @RequestBody String payload,
+            @RequestHeader("Stripe-Signature") String sigHeader) {
+
+        Event event;
+
+        try {
+            event = Webhook.constructEvent(payload, sigHeader, endpointSecret);
+            customersService.handleEvent(event);
         } catch (SignatureVerificationException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Invalid signature");
         }

@@ -1,12 +1,15 @@
 package com.demoapp.demoapp.services;
 
+import java.util.List;
+import java.util.Random;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
-import com.demoapp.demoapp.entities.Customer;
-import com.demoapp.demoapp.entities.Invoice;
-import com.demoapp.demoapp.entities.Item;
+import com.demoapp.demoapp.entities.StripeCustomer;
+import com.demoapp.demoapp.entities.StripeInvoice;
+import com.demoapp.demoapp.entities.StripeItem;
 import com.demoapp.demoapp.interfaces.PaymentProvider;
 import com.demoapp.demoapp.models.InvoiceRequest;
 import com.demoapp.demoapp.models.InvoiceRequest.ItemDTO;
@@ -14,7 +17,8 @@ import com.demoapp.demoapp.repositories.CustomerRepository;
 import com.demoapp.demoapp.repositories.InvoiceRepository;
 import com.demoapp.demoapp.repositories.ItemRepository;
 import com.stripe.Stripe;
-import com.stripe.model.CustomerCollection;
+import com.stripe.model.Customer;
+import com.stripe.model.Invoice;
 import com.stripe.model.InvoiceItem;
 import com.stripe.param.CustomerCreateParams;
 import com.stripe.param.CustomerListParams;
@@ -28,75 +32,85 @@ public class StripeService implements PaymentProvider {
     @Value("${stripe.key.secret}")
     private String API_SECRET_KEY;
     @Autowired
-    CustomerRepository CustomerRepository;
+    CustomerRepository customerRepository;
     @Autowired
-    InvoiceRepository InvoiceRepository;
+    InvoiceRepository invoiceRepository;
     @Autowired
-    ItemRepository ItemRepository;
+    ItemRepository itemRepository;
 
-    public void createInvoice(InvoiceRequest invoiceRequest) throws Exception {
+    public void processInvoice(InvoiceRequest invoiceRequest) throws Exception {
         Stripe.apiKey = API_SECRET_KEY;
-        com.stripe.model.Customer stripeCustomer;
-        String email = invoiceRequest.getEmail();
-        Customer customer = CustomerRepository.findByEmail(email).orElse(null);
-        String customerId = null;
+        Customer stripeCustomer;
+        Long userId = invoiceRequest.getUserId();
+
+        StripeCustomer customer = customerRepository.findByUserId(userId).orElse(null);
         if (customer == null) {
-            stripeCustomer = findOrCreateCustomer(email);
-            customer = CustomerRepository.save(new Customer(email, stripeCustomer.getId()));
-            customerId = stripeCustomer.getId();
+            stripeCustomer = this.createCustomer(invoiceRequest.getEmail());
         } else {
-            customerId = customer.getProviderId();
+            stripeCustomer = Customer.retrieve(customer.getProviderId());
         }
-        InvoiceCreateParams invoiceParams = InvoiceCreateParams
-                .builder()
-                .setCustomer(customerId)
-                .setCollectionMethod(InvoiceCreateParams.CollectionMethod.SEND_INVOICE)
-                .setDaysUntilDue(30L)
-                .build();
-        com.stripe.model.Invoice stripeInvoice = com.stripe.model.Invoice.create(invoiceParams);
-        Invoice newInvoice = new Invoice();
-        newInvoice.setCustomer(customer);
-        newInvoice.setProviderId(stripeInvoice.getId());
-        InvoiceRepository.save(newInvoice);
+
+        Invoice stripeInvoice = createInvoice(stripeCustomer);
         for (ItemDTO item : invoiceRequest.getItems()) {
-            InvoiceItemCreateParams invoiceItemParams = InvoiceItemCreateParams.builder()
-                    .setCustomer(customerId)
-                    .setAmount(item.getAmount())
-                    .setInvoice(stripeInvoice.getId())
-                    .setCurrency("EUR")
-                    .setQuantity(item.getQuantity())
-                    .build();
-            InvoiceItem stripeItem = InvoiceItem.create(invoiceItemParams);
-            Item newItem = new Item();
-            newItem.setInvoice(newInvoice);
-            newItem.setProviderId(stripeItem.getId());
-            newItem.setAmount(item.getAmount());
-            newItem.setQuantity(item.getQuantity());
-            newItem.setCurrency("EUR");
-            ItemRepository.save(newItem);
+            this.createInvoiceItem(stripeCustomer, stripeInvoice, item);
         }
         InvoiceSendInvoiceParams invoiceSendParams = InvoiceSendInvoiceParams.builder().build();
         stripeInvoice.sendInvoice(invoiceSendParams);
 
     }
 
-    public com.stripe.model.Customer findOrCreateCustomer(String email) throws Exception {
-        CustomerListParams listParams = CustomerListParams.builder()
+    public Customer createCustomer(String email) throws Exception {
+        Random rand = new Random();
+        CustomerListParams params = CustomerListParams.builder()
                 .setEmail(email)
                 .setLimit(1L)
                 .build();
-
-        CustomerCollection customers = com.stripe.model.Customer.list(listParams);
-
-        if (!customers.getData().isEmpty()) {
-            return customers.getData().get(0);
+        List<Customer> customers = Customer.list(params).getData();
+        Customer customer;
+        if (!customers.isEmpty()) {
+            customer = customers.get(0);
+        } else {
+            CustomerCreateParams createParams = CustomerCreateParams.builder()
+                    .setEmail(email)
+                    .setDescription("Customer for " + email)
+                    .build();
+            customer = Customer.create(createParams);
         }
+        customerRepository.save(new StripeCustomer(rand.nextLong(), email, customer.getId()));
+        return customer;
+    }
 
-        CustomerCreateParams createParams = CustomerCreateParams.builder()
-                .setEmail(email)
-                .setDescription("Customer for " + email)
+    public Invoice createInvoice(Customer customer) throws Exception {
+        String id = customer.getId();
+        InvoiceCreateParams invoiceParams = InvoiceCreateParams
+                .builder()
+                .setCustomer(id)
+                .setCollectionMethod(InvoiceCreateParams.CollectionMethod.SEND_INVOICE)
+                .setDaysUntilDue(30L)
                 .build();
+        Invoice stripeInvoice = Invoice.create(invoiceParams);
+        StripeInvoice newInvoice = new StripeInvoice();
+        newInvoice.setCustomer(customerRepository.findByProviderId(id).orElse(null));
+        newInvoice.setProviderId(stripeInvoice.getId());
+        invoiceRepository.save(newInvoice);
+        return stripeInvoice;
+    }
 
-        return com.stripe.model.Customer.create(createParams);
+    public void createInvoiceItem(Customer customer, Invoice stripeInvoice, ItemDTO item) throws Exception {
+        InvoiceItemCreateParams invoiceItemParams = InvoiceItemCreateParams.builder()
+                .setCustomer(customer.getId())
+                .setAmount(item.getAmount())
+                .setInvoice(stripeInvoice.getId())
+                .setCurrency("EUR")
+                .setQuantity(item.getQuantity())
+                .build();
+        InvoiceItem stripeItem = InvoiceItem.create(invoiceItemParams);
+        StripeItem newItem = new StripeItem();
+        newItem.setInvoice(invoiceRepository.findByProviderId(stripeInvoice.getId()).orElse(null));
+        newItem.setProviderId(stripeItem.getId());
+        newItem.setAmount(item.getAmount());
+        newItem.setQuantity(item.getQuantity());
+        newItem.setCurrency("EUR");
+        itemRepository.save(newItem);
     }
 }

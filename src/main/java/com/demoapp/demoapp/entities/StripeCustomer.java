@@ -3,6 +3,9 @@ package com.demoapp.demoapp.entities;
 import java.util.Date;
 import java.util.List;
 
+import org.hibernate.annotations.SQLDelete;
+import org.hibernate.annotations.SQLRestriction;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -21,14 +24,19 @@ import lombok.Setter;
 @Getter
 @Setter
 @NoArgsConstructor
-public class Customer {
+@SQLDelete(sql = "UPDATE customers SET deleted_at = CURRENT_TIMESTAMP WHERE id=?")
+@SQLRestriction("deleted_at IS NULL")
+public class StripeCustomer {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", nullable = false)
     private Long id;
 
-    @Column(name = "email", nullable = false, unique = true)
+    @Column(name = "user_id", nullable = false)
+    private Long userId;
+
+    @Column(name = "email")
     private String email;
 
     @Column(name = "name")
@@ -44,13 +52,17 @@ public class Customer {
     private String providerId;
 
     @OneToMany(mappedBy = "customer")
-    private List<Invoice> invoices;
+    private List<StripeInvoice> invoices;
 
     @Column(name = "created_at", insertable = false, updatable = false)
     @Temporal(TemporalType.TIMESTAMP)
     private Date createdAt;
 
-    public Customer(String email, String providerId) {
+    @Column(name = "deleted_at")
+    private Date deletedAt;
+
+    public StripeCustomer(Long userId, String email, String providerId) {
+        this.userId = userId;
         this.email = email;
         this.providerId = providerId;
     }

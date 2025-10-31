@@ -45,7 +45,7 @@ public class PaymentsController {
     public ResponseEntity<Map<String, String>> sendInvoice(@RequestBody InvoiceRequest invoiceRequest) {
         try {
             PaymentProvider provider = paymentFactory.getProvider(SELECTED_PROVIDER);
-            provider.createInvoice(invoiceRequest);
+            provider.processInvoice(invoiceRequest);
             return ResponseEntity.ok(Map.of("message", "Invoice created successfully"));
         } catch (Exception e) {
             e.printStackTrace();
