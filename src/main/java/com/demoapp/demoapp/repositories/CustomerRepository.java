@@ -11,8 +11,6 @@ import com.demoapp.demoapp.entities.StripeCustomer;
 public interface CustomerRepository extends JpaRepository<StripeCustomer, Long> {
     Optional<StripeCustomer> findByEmail(String email);
 
-    Optional<StripeCustomer> findByUserId(Long userId);
-
     Optional<StripeCustomer> findByProviderId(String providerId);
 
     void deleteByProviderId(String providerId);

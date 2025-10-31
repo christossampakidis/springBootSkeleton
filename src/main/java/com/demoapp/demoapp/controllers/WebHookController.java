@@ -49,9 +49,7 @@ public class WebHookController {
     @PostMapping("/customers")
     public ResponseEntity<String> handleCustomerEvents(HttpServletRequest request, @RequestBody String payload,
             @RequestHeader("Stripe-Signature") String sigHeader) {
-
         Event event;
-
         try {
             event = Webhook.constructEvent(payload, sigHeader, endpointSecret);
             customersService.handleEvent(event);

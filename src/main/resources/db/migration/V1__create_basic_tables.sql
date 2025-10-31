@@ -1,7 +1,6 @@
 create table
     customers (
         id bigint auto_increment primary key,
-        `user_id` bigint,
         `name` varchar(255),
         phone varchar(255),
         tax_exempt varchar(255),

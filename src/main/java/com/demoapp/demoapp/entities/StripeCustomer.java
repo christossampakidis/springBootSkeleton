@@ -33,9 +33,6 @@ public class StripeCustomer {
     @Column(name = "id", nullable = false)
     private Long id;
 
-    @Column(name = "user_id", nullable = false)
-    private Long userId;
-
     @Column(name = "email")
     private String email;
 
@@ -61,8 +58,7 @@ public class StripeCustomer {
     @Column(name = "deleted_at")
     private Date deletedAt;
 
-    public StripeCustomer(Long userId, String email, String providerId) {
-        this.userId = userId;
+    public StripeCustomer(String email, String providerId) {
         this.email = email;
         this.providerId = providerId;
     }

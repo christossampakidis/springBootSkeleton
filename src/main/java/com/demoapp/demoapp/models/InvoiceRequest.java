@@ -10,8 +10,6 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 public class InvoiceRequest {
-
-    private Long userId;
     private String email;
     private List<ItemDTO> items;
 

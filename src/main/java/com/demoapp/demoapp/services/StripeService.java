@@ -1,7 +1,6 @@
 package com.demoapp.demoapp.services;
 
 import java.util.List;
-import java.util.Random;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -41,11 +40,11 @@ public class StripeService implements PaymentProvider {
     public void processInvoice(InvoiceRequest invoiceRequest) throws Exception {
         Stripe.apiKey = API_SECRET_KEY;
         Customer stripeCustomer;
-        Long userId = invoiceRequest.getUserId();
+        String email = invoiceRequest.getEmail();
 
-        StripeCustomer customer = customerRepository.findByUserId(userId).orElse(null);
+        StripeCustomer customer = customerRepository.findByEmail(email).orElse(null);
         if (customer == null) {
-            stripeCustomer = this.createCustomer(invoiceRequest.getEmail());
+            stripeCustomer = this.createCustomer(email);
         } else {
             stripeCustomer = Customer.retrieve(customer.getProviderId());
         }
@@ -60,7 +59,6 @@ public class StripeService implements PaymentProvider {
     }
 
     public Customer createCustomer(String email) throws Exception {
-        Random rand = new Random();
         CustomerListParams params = CustomerListParams.builder()
                 .setEmail(email)
                 .setLimit(1L)
@@ -76,7 +74,7 @@ public class StripeService implements PaymentProvider {
                     .build();
             customer = Customer.create(createParams);
         }
-        customerRepository.save(new StripeCustomer(rand.nextLong(), email, customer.getId()));
+        customerRepository.save(new StripeCustomer(email, customer.getId()));
         return customer;
     }
 
