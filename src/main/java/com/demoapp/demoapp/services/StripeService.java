@@ -96,8 +96,9 @@ public class StripeService implements PaymentProvider {
 
     public void createInvoiceItem(Customer customer, Invoice stripeInvoice, ItemDTO item) throws Exception {
         InvoiceItemCreateParams invoiceItemParams = InvoiceItemCreateParams.builder()
+                .setDescription(item.getDescription())
                 .setCustomer(customer.getId())
-                .setAmount(item.getAmount())
+                .setUnitAmountDecimal(item.getUnitAmount())
                 .setInvoice(stripeInvoice.getId())
                 .setCurrency("EUR")
                 .setQuantity(item.getQuantity())
@@ -106,7 +107,8 @@ public class StripeService implements PaymentProvider {
         StripeItem newItem = new StripeItem();
         newItem.setInvoice(invoiceRepository.findByProviderId(stripeInvoice.getId()).orElse(null));
         newItem.setProviderId(stripeItem.getId());
-        newItem.setAmount(item.getAmount());
+        newItem.setDescription(item.getDescription());
+        newItem.setUnitAmount(item.getUnitAmount());
         newItem.setQuantity(item.getQuantity());
         newItem.setCurrency("EUR");
         itemRepository.save(newItem);

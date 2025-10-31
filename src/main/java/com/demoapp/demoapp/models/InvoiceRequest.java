@@ -1,5 +1,6 @@
 package com.demoapp.demoapp.models;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 import lombok.Getter;
@@ -17,15 +18,13 @@ public class InvoiceRequest {
     @Setter
     @NoArgsConstructor
     public static class ItemDTO {
-        private String name;
         private String description;
-        private Long amount;
+        private BigDecimal unitAmount;
         private Long quantity;
 
-        public ItemDTO(String name, String description, Long amount, Long quantity) {
-            this.name = name;
+        public ItemDTO(String description, BigDecimal unitAmount, Long quantity) {
             this.description = description;
-            this.amount = amount;
+            this.unitAmount = unitAmount;
             this.quantity = quantity;
         }
 

@@ -1,5 +1,6 @@
 package com.demoapp.demoapp.entities;
 
+import java.math.BigDecimal;
 import java.util.Date;
 
 import org.hibernate.annotations.SQLDelete;
@@ -38,8 +39,8 @@ public class StripeItem {
     @JoinColumn(name = "invoice_id", nullable = false)
     private StripeInvoice invoice;
 
-    @Column(name = "amount", nullable = false)
-    private Long amount;
+    @Column(name = "unit_amount", nullable = false)
+    private BigDecimal unitAmount;
 
     @Column(name = "currency", nullable = false)
     private String currency;

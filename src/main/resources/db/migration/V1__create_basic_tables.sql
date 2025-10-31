@@ -39,7 +39,7 @@ create table
         id bigint unsigned auto_increment primary key,
         provider_id varchar(255),
         invoice_id bigint,
-        amount bigint,
+        unit_amount decimal(10, 2),
         currency varchar(255),
         description varchar(255),
         quantity bigint,
