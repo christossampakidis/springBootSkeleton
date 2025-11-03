@@ -1,0 +1,5 @@
+
+{
+    "java.jdt.ls.vmargs": "-noverify -Xmx8G -XX:+UseG1GC -XX:+UseStringDeduplication"
+
+}
