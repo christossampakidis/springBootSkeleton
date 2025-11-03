@@ -1,4 +1,4 @@
-package com.demoapp.demoapp.models;
+package com.demoapp.demoapp.models.requests;
 
 import java.math.BigDecimal;
 import java.util.List;

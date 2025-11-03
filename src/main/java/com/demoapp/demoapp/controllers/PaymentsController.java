@@ -11,9 +11,9 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.demoapp.demoapp.factories.PaymentFactory;
 import com.demoapp.demoapp.interfaces.PaymentProvider;
-import com.demoapp.demoapp.models.InvoiceRequest;
+import com.demoapp.demoapp.models.requests.InvoiceRequest;
+import com.demoapp.demoapp.models.requests.PaymentIntentRequest;
 import com.demoapp.demoapp.services.InvoicesService;
 
 @RestController
@@ -26,7 +26,7 @@ public class PaymentsController {
     InvoicesService invoicesService;
 
     @Autowired
-    private PaymentFactory paymentFactory;
+    private Map<String, PaymentProvider> paymentProviders;
 
     @GetMapping("/invoices")
     // @PreAuthorize("isAuthenticated()")
@@ -44,7 +44,7 @@ public class PaymentsController {
     // @PreAuthorize("isAuthenticated()")
     public ResponseEntity<Map<String, String>> sendInvoice(@RequestBody InvoiceRequest invoiceRequest) {
         try {
-            PaymentProvider provider = paymentFactory.getProvider(SELECTED_PROVIDER);
+            PaymentProvider provider = paymentProviders.get(SELECTED_PROVIDER);
             provider.processInvoice(invoiceRequest);
             return ResponseEntity.ok(Map.of("message", "Invoice created successfully"));
         } catch (Exception e) {
@@ -54,4 +54,17 @@ public class PaymentsController {
         }
     }
 
+    @PostMapping("/payment-intent")
+    // @PreAuthorize("isAuthenticated()")
+    public ResponseEntity<Map<String, String>> createPaymentIntent(@RequestBody PaymentIntentRequest invoiceRequest) {
+        try {
+            PaymentProvider provider = paymentProviders.get(SELECTED_PROVIDER);
+            Map<String, String> response = provider.createPaymentIntent(invoiceRequest);
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.internalServerError()
+                    .body(Map.of("message", "Error creating payment intent"));
+        }
+    }
 }

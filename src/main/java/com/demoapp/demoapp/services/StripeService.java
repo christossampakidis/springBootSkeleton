@@ -1,6 +1,8 @@
 package com.demoapp.demoapp.services;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -10,20 +12,26 @@ import com.demoapp.demoapp.entities.StripeCustomer;
 import com.demoapp.demoapp.entities.StripeInvoice;
 import com.demoapp.demoapp.entities.StripeItem;
 import com.demoapp.demoapp.interfaces.PaymentProvider;
-import com.demoapp.demoapp.models.InvoiceRequest;
-import com.demoapp.demoapp.models.InvoiceRequest.ItemDTO;
+import com.demoapp.demoapp.models.requests.InvoiceRequest;
+import com.demoapp.demoapp.models.requests.InvoiceRequest.ItemDTO;
+import com.demoapp.demoapp.models.requests.PaymentIntentRequest;
 import com.demoapp.demoapp.repositories.CustomerRepository;
 import com.demoapp.demoapp.repositories.InvoiceRepository;
 import com.demoapp.demoapp.repositories.ItemRepository;
 import com.stripe.Stripe;
+import com.stripe.exception.CardException;
 import com.stripe.model.Customer;
+import com.stripe.model.CustomerSession;
 import com.stripe.model.Invoice;
 import com.stripe.model.InvoiceItem;
+import com.stripe.model.PaymentIntent;
 import com.stripe.param.CustomerCreateParams;
 import com.stripe.param.CustomerListParams;
+import com.stripe.param.CustomerSessionCreateParams;
 import com.stripe.param.InvoiceCreateParams;
 import com.stripe.param.InvoiceItemCreateParams;
 import com.stripe.param.InvoiceSendInvoiceParams;
+import com.stripe.param.PaymentIntentCreateParams;
 
 @Service("stripe")
 public class StripeService implements PaymentProvider {
@@ -113,4 +121,56 @@ public class StripeService implements PaymentProvider {
         newItem.setCurrency("EUR");
         itemRepository.save(newItem);
     }
+
+    public Map<String, String> createPaymentIntent(PaymentIntentRequest paymentIntentRequest) throws Exception {
+        Stripe.apiKey = API_SECRET_KEY;
+        Customer stripeCustomer;
+        String email = paymentIntentRequest.getEmail();
+
+        StripeCustomer customer = customerRepository.findByEmail(email).orElse(null);
+        if (customer == null) {
+            stripeCustomer = this.createCustomer(email);
+        } else {
+            stripeCustomer = Customer.retrieve(customer.getProviderId());
+        }
+
+        PaymentIntentCreateParams params = PaymentIntentCreateParams.builder()
+                .setAmount(paymentIntentRequest.getAmount())
+                .setCurrency("eur")
+                .setCustomer(stripeCustomer.getId())
+                .addPaymentMethodType("card")
+                .addPaymentMethodType("paypal")
+                .build();
+
+        Map<String, String> map = new HashMap<>();
+        try {
+            PaymentIntent paymentIntent = PaymentIntent.create(params);
+            CustomerSessionCreateParams csParams = CustomerSessionCreateParams.builder()
+                    .setCustomer(stripeCustomer.getId())
+                    .setComponents(CustomerSessionCreateParams.Components.builder().build())
+                    .putExtraParam("components[payment_element][enabled]", true)
+                    .putExtraParam(
+                            "components[payment_element][features][payment_method_redisplay]",
+                            "enabled")
+                    .putExtraParam(
+                            "components[payment_element][features][payment_method_save]",
+                            "enabled")
+                    .putExtraParam(
+                            "components[payment_element][features][payment_method_save_usage]",
+                            "off_session")
+                    .putExtraParam(
+                            "components[payment_element][features][payment_method_remove]",
+                            "enabled")
+                    .build();
+            CustomerSession customerSession = CustomerSession.create(csParams);
+            map.put("client_secret", paymentIntent.getClientSecret());
+            map.put("customerSessionClientSecret", customerSession.getClientSecret());
+        } catch (CardException e) {
+            map.put("error", e.getUserMessage());
+        } catch (Exception e) {
+            map.put("error", e.getMessage());
+        }
+        return map;
+    }
+
 }
