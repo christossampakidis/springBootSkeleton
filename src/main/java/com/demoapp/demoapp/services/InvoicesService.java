@@ -41,6 +41,7 @@ public class InvoicesService {
         return invoiceRepository.findAll().stream()
                 .map(invoice -> new InvoiceDTO(
                         invoice.getId(),
+                        invoice.getStatus(),
                         invoice.getCustomer().getEmail(),
                         invoice.getInvoiceNumber(),
                         invoice.getCreatedAt(),
