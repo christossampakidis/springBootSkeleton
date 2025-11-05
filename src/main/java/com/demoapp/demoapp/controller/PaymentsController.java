@@ -4,6 +4,7 @@ import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -36,7 +37,7 @@ public class PaymentsController {
      * @return ResponseEntity with invoice data or error message.
      */
     @GetMapping("/invoices")
-    // @PreAuthorize("isAuthenticated()")
+    @PreAuthorize("isAuthenticated()")
     public ResponseEntity<Map<String, Object>> getInvoices() {
         try {
             return ResponseEntity.ok(Map.of("message", invoicesService.fetchInvoices()));
@@ -54,7 +55,7 @@ public class PaymentsController {
      * @return
      */
     @PostMapping("/invoice")
-    // @PreAuthorize("isAuthenticated()")
+    @PreAuthorize("isAuthenticated()")
     public ResponseEntity<Map<String, String>> sendInvoice(@RequestBody InvoiceRequest invoiceRequest) {
         try {
             PaymentProvider provider = paymentProviders.get(SELECTED_PROVIDER);
@@ -74,7 +75,7 @@ public class PaymentsController {
      * @return
      */
     @DeleteMapping("/invoice/{id}")
-    // @PreAuthorize("isAuthenticated()")
+    @PreAuthorize("isAuthenticated()")
     public ResponseEntity<Map<String, String>> voidInvoice(@PathVariable("id") Long id) {
         try {
             PaymentProvider provider = paymentProviders.get(SELECTED_PROVIDER);
@@ -94,7 +95,7 @@ public class PaymentsController {
      * @return
      */
     @PostMapping("/payment-intent")
-    // @PreAuthorize("isAuthenticated()")
+    @PreAuthorize("isAuthenticated()")
     public ResponseEntity<Map<String, String>> createPaymentIntent(@RequestBody PaymentIntentRequest invoiceRequest) {
         try {
             PaymentProvider provider = paymentProviders.get(SELECTED_PROVIDER);

@@ -54,23 +54,28 @@ public class StripeClientImpl implements StripeClient {
     @Override
     public Customer createCustomer(String email) throws Exception {
         init();
-        CustomerListParams params = CustomerListParams.builder()
-                .setEmail(email)
-                .setLimit(1L)
-                .build();
-        List<Customer> customers = Customer.list(params).getData();
-        Customer customer;
-        if (!customers.isEmpty()) {
-            customer = customers.get(0);
-        } else {
-            CustomerCreateParams createParams = CustomerCreateParams.builder()
+        StripeCustomer localCustomer = customerRepository.findByEmail(email).orElse(null);
+        if (localCustomer == null) {
+            CustomerListParams params = CustomerListParams.builder()
                     .setEmail(email)
-                    .setDescription("Customer for " + email)
+                    .setLimit(1L)
                     .build();
-            customer = Customer.create(createParams);
+            List<Customer> customers = Customer.list(params).getData();
+            Customer customer;
+            if (!customers.isEmpty()) {
+                customer = customers.get(0);
+            } else {
+                CustomerCreateParams createParams = CustomerCreateParams.builder()
+                        .setEmail(email)
+                        .setDescription("Customer for " + email)
+                        .build();
+                customer = Customer.create(createParams);
+            }
+            customerRepository.save(new StripeCustomer(email, customer.getId()));
+            return customer;
+        } else {
+            return Customer.retrieve(localCustomer.getProviderId());
         }
-        customerRepository.save(new StripeCustomer(email, customer.getId()));
-        return customer;
     }
 
     @Override

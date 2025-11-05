@@ -16,6 +16,18 @@ spring:
     url: jdbc:mysql://localhost:3306/crm
     username: testuser
     password: testpass
+  cloud:
+    aws:
+      credentials:
+        access-key: test
+        secret-key: test
+      region:
+        static: us-east-1
+      endpoint: http://localhost:4566
+      s3: 
+        path-style-access-enabled: true
+        bucket-name: bucket-name
+      
 
 server:
   error:

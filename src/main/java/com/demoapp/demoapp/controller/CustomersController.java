@@ -4,6 +4,7 @@ import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -20,11 +21,12 @@ public class CustomersController {
     CustomersService customersService;
 
     /**
-    * Fetches all customers.
-    * @return ResponseEntity with customer data or error message.
-    */
+     * Fetches all customers.
+     * 
+     * @return ResponseEntity with customer data or error message.
+     */
     @GetMapping
-    // @PreAuthorize("isAuthenticated()")
+    @PreAuthorize("isAuthenticated()")
     public ResponseEntity<Map<String, Object>> getCustomers() {
         try {
             return ResponseEntity.ok(Map.of("message", customersService.fetchCustomers()));

@@ -7,7 +7,9 @@ plugins {
 group = 'com.demoapp'
 version = '0.0.1-SNAPSHOT'
 description = 'demoapp project for Spring Boot'
-
+ext {
+	springCloudAwsVersion = '3.4.0'
+}
 java {
 	toolchain {
 		languageVersion = JavaLanguageVersion.of(21)
@@ -19,6 +21,8 @@ repositories {
 }
 
 dependencies {
+	implementation platform("io.awspring.cloud:spring-cloud-aws-dependencies:${springCloudAwsVersion}")
+	implementation "io.awspring.cloud:spring-cloud-aws-starter-s3"
 	implementation 'org.springframework.boot:spring-boot-starter-oauth2-resource-server'
 	implementation 'org.springframework.boot:spring-boot-starter-security'
 	implementation 'org.springframework.boot:spring-boot-starter-web'
@@ -29,7 +33,7 @@ dependencies {
 	implementation 'org.flywaydb:flyway-core'
 	implementation 'org.flywaydb:flyway-mysql'
 	compileOnly 'org.projectlombok:lombok'
-  	annotationProcessor 'org.projectlombok:lombok'
+	annotationProcessor 'org.projectlombok:lombok'
     annotationProcessor "org.mapstruct:mapstruct-processor:1.4.2.Final"
 	runtimeOnly 'com.mysql:mysql-connector-j'
 	developmentOnly 'org.springframework.boot:spring-boot-devtools'
