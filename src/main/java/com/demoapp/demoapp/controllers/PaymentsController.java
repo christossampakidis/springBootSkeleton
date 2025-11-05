@@ -30,6 +30,10 @@ public class PaymentsController {
     @Autowired
     private Map<String, PaymentProvider> paymentProviders;
 
+    /**
+     * Fetches all invoices.
+     * @return ResponseEntity with invoice data or error message.
+     */
     @GetMapping("/invoices")
     // @PreAuthorize("isAuthenticated()")
     public ResponseEntity<Map<String, Object>> getInvoices() {
@@ -42,6 +46,11 @@ public class PaymentsController {
         }
     }
 
+    /**
+     * Sends an invoice based on the provided invoice request.
+     * @param invoiceRequest
+     * @return
+     */
     @PostMapping("/invoice")
     // @PreAuthorize("isAuthenticated()")
     public ResponseEntity<Map<String, String>> sendInvoice(@RequestBody InvoiceRequest invoiceRequest) {
@@ -56,6 +65,11 @@ public class PaymentsController {
         }
     }
 
+    /**
+     * Voids an invoice by its ID.
+     * @param id
+     * @return
+     */
     @DeleteMapping("/invoice/{id}")
     // @PreAuthorize("isAuthenticated()")
     public ResponseEntity<Map<String, String>> voidInvoice(@PathVariable("id") Long id) {
@@ -70,6 +84,11 @@ public class PaymentsController {
         }
     }
 
+    /**
+     * Creates a payment intent based on the provided payment intent request.
+     * @param invoiceRequest
+     * @return
+     */
     @PostMapping("/payment-intent")
     // @PreAuthorize("isAuthenticated()")
     public ResponseEntity<Map<String, String>> createPaymentIntent(@RequestBody PaymentIntentRequest invoiceRequest) {

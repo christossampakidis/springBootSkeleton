@@ -19,6 +19,10 @@ public class CustomersController {
     @Autowired
     CustomersService customersService;
 
+    /**
+    * Fetches all customers.
+    * @return ResponseEntity with customer data or error message.
+    */
     @GetMapping
     // @PreAuthorize("isAuthenticated()")
     public ResponseEntity<Map<String, Object>> getCustomers() {

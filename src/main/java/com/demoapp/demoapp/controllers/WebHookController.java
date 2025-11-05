@@ -30,6 +30,13 @@ public class WebHookController {
     @Autowired
     CustomersService customersService;
 
+    /**
+     * Handles Stripe webhook events related to invoices.
+     * @param request
+     * @param payload
+     * @param sigHeader
+     * @return
+     */
     @PostMapping("/invoices")
     public ResponseEntity<String> handleInvoiceEvents(HttpServletRequest request, @RequestBody String payload,
             @RequestHeader("Stripe-Signature") String sigHeader) {
@@ -46,6 +53,13 @@ public class WebHookController {
         return ResponseEntity.ok("");
     }
 
+    /**
+     * Handles Stripe webhook events related to customers.
+     * @param request
+     * @param payload
+     * @param sigHeader
+     * @return
+     */
     @PostMapping("/customers")
     public ResponseEntity<String> handleCustomerEvents(HttpServletRequest request, @RequestBody String payload,
             @RequestHeader("Stripe-Signature") String sigHeader) {

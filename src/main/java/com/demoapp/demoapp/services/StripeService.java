@@ -46,6 +46,12 @@ public class StripeService implements PaymentProvider {
     @Autowired
     ItemRepository itemRepository;
 
+    /**
+     * Processes an invoice request by creating a customer (if not existing), creating an invoice,
+     * adding invoice items, and sending the invoice.
+     * @param invoiceRequest
+     * @throws Exception
+     */
     public void processInvoice(InvoiceRequest invoiceRequest) throws Exception {
         Stripe.apiKey = API_SECRET_KEY;
         Customer stripeCustomer;
@@ -67,6 +73,12 @@ public class StripeService implements PaymentProvider {
 
     }
 
+    /**
+     * Creates a Stripe customer with the given email if not already existing.
+     * @param email
+     * @return
+     * @throws Exception
+     */
     public Customer createCustomer(String email) throws Exception {
         CustomerListParams params = CustomerListParams.builder()
                 .setEmail(email)
@@ -87,6 +99,11 @@ public class StripeService implements PaymentProvider {
         return customer;
     }
 
+    /**
+     * Voids an invoice by its ID.
+     * @param invoiceId
+     * @throws Exception
+     */
     public void voidInvoice(Long invoiceId) throws Exception {
         Stripe.apiKey = API_SECRET_KEY;
         Optional<StripeInvoice> invoice = invoiceRepository.findById(invoiceId);
@@ -94,6 +111,12 @@ public class StripeService implements PaymentProvider {
         stripeInvoice.voidInvoice();
     }
 
+    /**
+     * Creates an invoice for the given customer.
+     * @param customer
+     * @return
+     * @throws Exception
+     */
     public Invoice createInvoice(Customer customer) throws Exception {
         String id = customer.getId();
         InvoiceCreateParams invoiceParams = InvoiceCreateParams
@@ -110,6 +133,13 @@ public class StripeService implements PaymentProvider {
         return stripeInvoice;
     }
 
+    /**
+     * Creates an invoice item for the given customer and invoice.
+     * @param customer
+     * @param stripeInvoice
+     * @param item
+     * @throws Exception
+     */
     public void createInvoiceItem(Customer customer, Invoice stripeInvoice, ItemDTO item) throws Exception {
         InvoiceItemCreateParams invoiceItemParams = InvoiceItemCreateParams.builder()
                 .setDescription(item.getDescription())
@@ -130,6 +160,12 @@ public class StripeService implements PaymentProvider {
         itemRepository.save(newItem);
     }
 
+    /**
+     * Creates a payment intent for the given payment intent request.
+     * @param paymentIntentRequest
+     * @return
+     * @throws Exception
+     */
     public Map<String, String> createPaymentIntent(PaymentIntentRequest paymentIntentRequest) throws Exception {
         Stripe.apiKey = API_SECRET_KEY;
         Customer stripeCustomer;

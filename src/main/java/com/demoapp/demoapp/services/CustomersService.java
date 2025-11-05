@@ -20,6 +20,10 @@ public class CustomersService {
     @Autowired
     private CustomerRepository CustomerRepository;
 
+    /**
+     * Fetches all customers and maps them to CustomerDTOs.
+     * @return List of CustomerDTOs
+     */
     public List<CustomerDTO> fetchCustomers() {
         return CustomerRepository.findAll().stream()
                 .map(customer -> new CustomerDTO(
@@ -29,6 +33,10 @@ public class CustomersService {
                 .toList();
     }
 
+    /**
+     * Handles Stripe webhook events related to customers.
+     * @param event
+     */
     @Transactional
     public void handleEvent(Event event) {
         Optional<StripeObject> deserializer = event.getDataObjectDeserializer().getObject();
@@ -46,6 +54,10 @@ public class CustomersService {
         }
     }
 
+    /**
+     * Creates a Stripe customer with the given details.
+     * @param stripeCustomer
+     */
     public void createCustomer(Customer stripeCustomer) {
         StripeCustomer newCustomer = new StripeCustomer();
         newCustomer.setEmail(stripeCustomer.getEmail());
@@ -53,6 +65,10 @@ public class CustomersService {
         CustomerRepository.save(newCustomer);
     }
 
+    /**
+     * Deletes a Stripe customer by its provider ID.
+     * @param stripeCustomer
+     */
     public void deleteCustomer(Customer stripeCustomer) {
         CustomerRepository.deleteByProviderId(stripeCustomer.getId());
     }
