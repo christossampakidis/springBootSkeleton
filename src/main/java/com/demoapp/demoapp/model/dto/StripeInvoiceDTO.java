@@ -1,4 +1,4 @@
-package com.demoapp.demoapp.models.dto;
+package com.demoapp.demoapp.model.dto;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;

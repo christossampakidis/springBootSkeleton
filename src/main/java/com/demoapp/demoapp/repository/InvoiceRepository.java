@@ -1,11 +1,11 @@
-package com.demoapp.demoapp.repositories;
+package com.demoapp.demoapp.repository;
 
 import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
-import com.demoapp.demoapp.entities.StripeInvoice;
+import com.demoapp.demoapp.entity.StripeInvoice;
 
 @Repository
 public interface InvoiceRepository extends JpaRepository<StripeInvoice, Long> {

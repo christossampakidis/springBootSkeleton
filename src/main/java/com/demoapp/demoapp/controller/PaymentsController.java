@@ -1,4 +1,4 @@
-package com.demoapp.demoapp.controllers;
+package com.demoapp.demoapp.controller;
 
 import java.util.Map;
 
@@ -13,10 +13,10 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.demoapp.demoapp.interfaces.PaymentProvider;
-import com.demoapp.demoapp.models.requests.InvoiceRequest;
-import com.demoapp.demoapp.models.requests.PaymentIntentRequest;
-import com.demoapp.demoapp.services.InvoicesService;
+import com.demoapp.demoapp.model.request.InvoiceRequest;
+import com.demoapp.demoapp.model.request.PaymentIntentRequest;
+import com.demoapp.demoapp.service.InvoicesService;
+import com.demoapp.demoapp.service.PaymentProvider;
 
 @RestController
 @RequestMapping("/api/payments")
@@ -32,6 +32,7 @@ public class PaymentsController {
 
     /**
      * Fetches all invoices.
+     * 
      * @return ResponseEntity with invoice data or error message.
      */
     @GetMapping("/invoices")
@@ -48,6 +49,7 @@ public class PaymentsController {
 
     /**
      * Sends an invoice based on the provided invoice request.
+     * 
      * @param invoiceRequest
      * @return
      */
@@ -67,6 +69,7 @@ public class PaymentsController {
 
     /**
      * Voids an invoice by its ID.
+     * 
      * @param id
      * @return
      */
@@ -86,6 +89,7 @@ public class PaymentsController {
 
     /**
      * Creates a payment intent based on the provided payment intent request.
+     * 
      * @param invoiceRequest
      * @return
      */

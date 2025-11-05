@@ -1,4 +1,4 @@
-package com.demoapp.demoapp.controllers;
+package com.demoapp.demoapp.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -10,8 +10,8 @@ import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.demoapp.demoapp.services.CustomersService;
-import com.demoapp.demoapp.services.InvoicesService;
+import com.demoapp.demoapp.service.CustomersService;
+import com.demoapp.demoapp.service.InvoicesService;
 import com.stripe.exception.SignatureVerificationException;
 import com.stripe.model.Event;
 import com.stripe.net.Webhook;
@@ -32,6 +32,7 @@ public class WebHookController {
 
     /**
      * Handles Stripe webhook events related to invoices.
+     * 
      * @param request
      * @param payload
      * @param sigHeader
@@ -55,6 +56,7 @@ public class WebHookController {
 
     /**
      * Handles Stripe webhook events related to customers.
+     * 
      * @param request
      * @param payload
      * @param sigHeader

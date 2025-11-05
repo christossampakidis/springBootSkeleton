@@ -1,4 +1,4 @@
-package com.demoapp.demoapp.controllers;
+package com.demoapp.demoapp.controller;
 
 import java.util.Map;
 
@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.demoapp.demoapp.services.CustomersService;
+import com.demoapp.demoapp.service.CustomersService;
 
 @RestController
 @RequestMapping("/api/customers")

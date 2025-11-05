@@ -1,48 +1,49 @@
-package com.demoapp.demoapp.services;
+package com.demoapp.demoapp.service;
 
 import java.util.List;
 import java.util.Optional;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.demoapp.demoapp.entities.StripeCustomer;
-import com.demoapp.demoapp.entities.StripeInvoice;
-import com.demoapp.demoapp.models.dto.InvoiceDTO;
-import com.demoapp.demoapp.repositories.CustomerRepository;
-import com.demoapp.demoapp.repositories.InvoiceRepository;
+import com.demoapp.demoapp.entity.StripeCustomer;
+import com.demoapp.demoapp.entity.StripeInvoice;
+import com.demoapp.demoapp.model.dto.InvoiceDTO;
+import com.demoapp.demoapp.repository.CustomerRepository;
+import com.demoapp.demoapp.repository.InvoiceRepository;
 import com.stripe.model.Event;
 import com.stripe.model.StripeObject;
 
 @Service
 public class InvoicesService {
-    @Autowired
-    InvoiceRepository invoiceRepository;
 
-    @Autowired
-    CustomerRepository customerRepository;
+    private final InvoiceRepository invoiceRepository;
+    private final CustomerRepository customerRepository;
+
+    public InvoicesService(InvoiceRepository invoiceRepository, CustomerRepository customerRepository) {
+        this.invoiceRepository = invoiceRepository;
+        this.customerRepository = customerRepository;
+    }
 
     /**
      * Handles Stripe webhook events related to invoices.
+     * 
      * @param event
      */
     public void handleEvent(Event event) {
         switch (event.getType()) {
-            case "invoice.updated":
-            case "invoice.created":
-            case "invoice.finalized":
+            case "invoice.updated", "invoice.created", "invoice.finalized" -> {
                 Optional<StripeObject> deserializer = event.getDataObjectDeserializer().getObject();
                 if (deserializer.isPresent() && deserializer.get() instanceof com.stripe.model.Invoice stripeInvoice) {
                     this.updateInvoice(stripeInvoice);
                 }
-                break;
-            default:
-                System.out.println("Unhandled event type: " + event.getType());
+            }
+            default -> System.out.println("Unhandled event type: " + event.getType());
         }
     }
 
     /**
      * Fetches all invoices and maps them to InvoiceDTOs.
+     * 
      * @return
      */
     public List<InvoiceDTO> fetchInvoices() {
@@ -58,7 +59,9 @@ public class InvoicesService {
     }
 
     /**
-     * Updates or creates a StripeInvoice entity based on the provided Stripe Invoice object.
+     * Updates or creates a StripeInvoice entity based on the provided Stripe
+     * Invoice object.
+     * 
      * @param object
      */
     public void updateInvoice(com.stripe.model.Invoice object) {
