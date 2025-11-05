@@ -26,7 +26,7 @@ import lombok.Setter;
 @Getter
 @Setter
 @NoArgsConstructor
-@SQLDelete(sql = "UPDATE invoices SET deleted = CURRENT_TIMESTAMP WHERE id=?")
+@SQLDelete(sql = "UPDATE invoices SET deleted_at = CURRENT_TIMESTAMP WHERE id=?")
 @SQLRestriction("deleted_at IS NULL")
 public class StripeInvoice {
 

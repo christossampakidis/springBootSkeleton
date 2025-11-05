@@ -8,5 +8,7 @@ import com.demoapp.demoapp.models.requests.PaymentIntentRequest;
 public interface PaymentProvider {
     void processInvoice(InvoiceRequest invoiceRequest) throws Exception;
 
+    void voidInvoice(Long invoiceId) throws Exception;
+
     Map<String, String> createPaymentIntent(PaymentIntentRequest paymentIntentRequest) throws Exception;
 }

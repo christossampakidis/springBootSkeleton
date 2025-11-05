@@ -10,4 +10,6 @@ import com.demoapp.demoapp.entities.StripeInvoice;
 @Repository
 public interface InvoiceRepository extends JpaRepository<StripeInvoice, Long> {
     Optional<StripeInvoice> findByProviderId(String providerId);
+
+    void deleteByProviderId(String providerId);
 }

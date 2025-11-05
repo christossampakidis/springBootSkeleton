@@ -5,7 +5,9 @@ import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -51,6 +53,20 @@ public class PaymentsController {
             e.printStackTrace();
             return ResponseEntity.internalServerError()
                     .body(Map.of("message", "Error creating invoice"));
+        }
+    }
+
+    @DeleteMapping("/invoice/{id}")
+    // @PreAuthorize("isAuthenticated()")
+    public ResponseEntity<Map<String, String>> voidInvoice(@PathVariable("id") Long id) {
+        try {
+            PaymentProvider provider = paymentProviders.get(SELECTED_PROVIDER);
+            provider.voidInvoice(id);
+            return ResponseEntity.ok(Map.of("message", "Invoice voided successfully"));
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.internalServerError()
+                    .body(Map.of("message", "Error voiding invoice"));
         }
     }
 

@@ -9,6 +9,16 @@
             "projectName": "springBootSkeleton",
             "args": "",
             "envFile": "${workspaceFolder}/.env"
+        },
+        {
+            "type": "java",
+            "name": "Spring Boot-DemoappApplication<demoapp-springBootSkeleton>",
+            "request": "launch",
+            "cwd": "${workspaceFolder}",
+            "mainClass": "com.demoapp.demoapp.DemoappApplication",
+            "projectName": "demoapp-springBootSkeleton",
+            "args": "",
+            "envFile": "${workspaceFolder}/.env"
         }
     ]
 }

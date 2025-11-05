@@ -3,6 +3,7 @@ package com.demoapp.demoapp.services;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -84,6 +85,13 @@ public class StripeService implements PaymentProvider {
         }
         customerRepository.save(new StripeCustomer(email, customer.getId()));
         return customer;
+    }
+
+    public void voidInvoice(Long invoiceId) throws Exception {
+        Stripe.apiKey = API_SECRET_KEY;
+        Optional<StripeInvoice> invoice = invoiceRepository.findById(invoiceId);
+        Invoice stripeInvoice = Invoice.retrieve(invoice.get().getProviderId());
+        stripeInvoice.voidInvoice();
     }
 
     public Invoice createInvoice(Customer customer) throws Exception {
