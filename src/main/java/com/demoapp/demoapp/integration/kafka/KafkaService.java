@@ -22,14 +22,14 @@ public class KafkaService implements Kafka {
     }
 
     @Override
-    @KafkaListener(topics = "demo-topic", groupId = "demo-group")
+    @KafkaListener(topics = "invoices", groupId = "crm")
     public void processMessage(String content) {
         System.out.println("Received Kafka message: " + content);
     }
 
     @Override
     public void sendMessage(String topic, String message) {
-        System.out.println("🚀 Sending message to topic [" + topic + "]: " + message);
+        System.out.println("Sending message to topic [" + topic + "]: " + message);
         kafkaTemplate.send(new ProducerRecord<>(topic, message));
     }
 
@@ -40,7 +40,7 @@ public class KafkaService implements Kafka {
             NewTopic newTopic = new NewTopic(topic, 1, (short) 1);
             adminClient.createTopics(Collections.singletonList(newTopic)).all().get();
         } catch (InterruptedException | ExecutionException e) {
-            System.err.println("⚠Failed to subscribe to topic " + topic + ": " + e.getMessage());
+            System.err.println("Failed to subscribe to topic " + topic + ": " + e.getMessage());
         }
     }
 
