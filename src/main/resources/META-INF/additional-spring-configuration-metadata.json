@@ -1,0 +1,15 @@
+{
+  "properties": [
+    {
+      "name": "flyway.locations",
+      "type": "java.lang.String"
+  },
+    {
+      "name": "flyway.baseline-on-migrate",
+      "type": "java.lang.Boolean"
+    },
+    {
+      "name": "flyway.validate-on-migrate",
+      "type": "java.lang.Boolean"
+    }
+] }

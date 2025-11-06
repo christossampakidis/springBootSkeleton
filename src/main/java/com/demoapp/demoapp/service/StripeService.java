@@ -3,9 +3,11 @@ package com.demoapp.demoapp.service;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.demoapp.demoapp.integration.kafka.Kafka;
+import com.demoapp.demoapp.service.interfaces.PaymentProvider;
 import org.springframework.stereotype.Service;
 
-import com.demoapp.demoapp.integration.Stripe.StripeClient;
+import com.demoapp.demoapp.integration.stripe.StripeClient;
 import com.demoapp.demoapp.model.request.InvoiceRequest;
 import com.demoapp.demoapp.model.request.InvoiceRequest.ItemDTO;
 import com.demoapp.demoapp.model.request.PaymentIntentRequest;
@@ -16,8 +18,10 @@ import com.stripe.model.Invoice;
 public class StripeService implements PaymentProvider {
 
     private final StripeClient stripeClient;
+    private final Kafka kafkaService;
 
-    public StripeService(StripeClient stripeClient) {
+    public StripeService(StripeClient stripeClient, Kafka kafkaService) {
+        this.kafkaService = kafkaService;
         this.stripeClient = stripeClient;
     }
 
@@ -29,6 +33,7 @@ public class StripeService implements PaymentProvider {
             stripeClient.createInvoiceItem(customer, invoice, item);
         }
         stripeClient.sendInvoice(invoice);
+        kafkaService.sendMessage("demo-topic", "hello from StripeService");
     }
 
     @Override

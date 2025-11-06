@@ -3,6 +3,7 @@ package com.demoapp.demoapp.service;
 import java.util.List;
 import java.util.Optional;
 
+import com.demoapp.demoapp.service.interfaces.CustomersService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -14,19 +15,14 @@ import com.stripe.model.Event;
 import com.stripe.model.StripeObject;
 
 @Service("customers")
-public class CustomersService {
+public class CustomersServiceImpl implements CustomersService {
 
     private final CustomerRepository customerRepository;
 
-    public CustomersService(CustomerRepository customerRepository) {
+    public CustomersServiceImpl(CustomerRepository customerRepository) {
         this.customerRepository = customerRepository;
     }
 
-    /**
-     * Fetches all customers and maps them to CustomerDTOs.
-     * 
-     * @return List of CustomerDTOs
-     */
     public List<CustomerDTO> fetchCustomers() {
         return customerRepository.findAll().stream()
                 .map(customer -> new CustomerDTO(
@@ -36,11 +32,6 @@ public class CustomersService {
                 .toList();
     }
 
-    /**
-     * Handles Stripe webhook events related to customers.
-     * 
-     * @param event
-     */
     @Transactional
     public void handleEvent(Event event) {
         Optional<StripeObject> deserializer = event.getDataObjectDeserializer().getObject();
@@ -53,23 +44,14 @@ public class CustomersService {
         }
     }
 
-    /**
-     * Creates a Stripe customer with the given details.
-     * 
-     * @param stripeCustomer
-     */
     public void createCustomer(Customer stripeCustomer) {
-        StripeCustomer newCustomer = new StripeCustomer();
-        newCustomer.setEmail(stripeCustomer.getEmail());
-        newCustomer.setProviderId(stripeCustomer.getId());
+        StripeCustomer newCustomer = new StripeCustomer(
+                stripeCustomer.getEmail(),
+                stripeCustomer.getId()
+        );
         customerRepository.save(newCustomer);
     }
 
-    /**
-     * Deletes a Stripe customer by its provider ID.
-     * 
-     * @param stripeCustomer
-     */
     public void deleteCustomer(Customer stripeCustomer) {
         customerRepository.deleteByProviderId(stripeCustomer.getId());
     }

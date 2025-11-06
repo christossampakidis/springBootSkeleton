@@ -1,4 +1,4 @@
-package com.demoapp.demoapp.integration.Stripe;
+package com.demoapp.demoapp.integration.stripe;
 
 import java.util.List;
 
@@ -15,13 +15,11 @@ import com.demoapp.demoapp.repository.InvoiceRepository;
 import com.demoapp.demoapp.repository.ItemRepository;
 import com.stripe.Stripe;
 import com.stripe.model.Customer;
-import com.stripe.model.CustomerSession;
 import com.stripe.model.Invoice;
 import com.stripe.model.InvoiceItem;
 import com.stripe.model.PaymentIntent;
 import com.stripe.param.CustomerCreateParams;
 import com.stripe.param.CustomerListParams;
-import com.stripe.param.CustomerSessionCreateParams;
 import com.stripe.param.InvoiceCreateParams;
 import com.stripe.param.InvoiceItemCreateParams;
 import com.stripe.param.InvoiceSendInvoiceParams;
@@ -40,8 +38,8 @@ public class StripeClientImpl implements StripeClient {
     private final ItemRepository itemRepository;
 
     public StripeClientImpl(CustomerRepository customerRepository,
-            InvoiceRepository invoiceRepository,
-            ItemRepository itemRepository) {
+                            InvoiceRepository invoiceRepository,
+                            ItemRepository itemRepository) {
         this.customerRepository = customerRepository;
         this.invoiceRepository = invoiceRepository;
         this.itemRepository = itemRepository;
@@ -63,7 +61,7 @@ public class StripeClientImpl implements StripeClient {
             List<Customer> customers = Customer.list(params).getData();
             Customer customer;
             if (!customers.isEmpty()) {
-                customer = customers.get(0);
+                customer = customers.getFirst();
             } else {
                 CustomerCreateParams createParams = CustomerCreateParams.builder()
                         .setEmail(email)
@@ -158,27 +156,6 @@ public class StripeClientImpl implements StripeClient {
                 .addPaymentMethodType("paypal")
                 .build();
 
-        PaymentIntent paymentIntent = PaymentIntent.create(params);
-
-        CustomerSessionCreateParams csParams = CustomerSessionCreateParams.builder()
-                .setCustomer(stripeCustomer.getId())
-                .setComponents(CustomerSessionCreateParams.Components.builder().build())
-                .putExtraParam("components[payment_element][enabled]", true)
-                .putExtraParam(
-                        "components[payment_element][features][payment_method_redisplay]",
-                        "enabled")
-                .putExtraParam(
-                        "components[payment_element][features][payment_method_save]",
-                        "enabled")
-                .putExtraParam(
-                        "components[payment_element][features][payment_method_save_usage]",
-                        "off_session")
-                .putExtraParam(
-                        "components[payment_element][features][payment_method_remove]",
-                        "enabled")
-                .build();
-        CustomerSession customerSession = CustomerSession.create(csParams);
-
-        return paymentIntent;
+        return PaymentIntent.create(params);
     }
 }

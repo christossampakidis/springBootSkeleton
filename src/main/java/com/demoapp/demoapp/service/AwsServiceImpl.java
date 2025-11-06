@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.net.URLConnection;
 import java.util.List;
 
+import com.demoapp.demoapp.service.interfaces.AwsService;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;

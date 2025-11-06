@@ -2,7 +2,7 @@ package com.demoapp.demoapp.controller;
 
 import java.util.Map;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import com.demoapp.demoapp.service.interfaces.CustomersService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -10,15 +10,17 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.demoapp.demoapp.service.CustomersService;
 
 @RestController
 @RequestMapping("/api/customers")
 @CrossOrigin(origins = "http://localhost:3000")
 public class CustomersController {
 
-    @Autowired
-    CustomersService customersService;
+    private final CustomersService customersService;
+
+    public CustomersController(CustomersService customersService){
+        this.customersService = customersService;
+    }
 
     /**
      * Fetches all customers.
@@ -31,7 +33,6 @@ public class CustomersController {
         try {
             return ResponseEntity.ok(Map.of("message", customersService.fetchCustomers()));
         } catch (Exception e) {
-            e.printStackTrace();
             return ResponseEntity.internalServerError()
                     .body(Map.of("message", "Error fetching customers"));
         }

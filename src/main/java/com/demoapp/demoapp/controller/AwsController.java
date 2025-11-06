@@ -1,6 +1,5 @@
 package com.demoapp.demoapp.controller;
 
-import java.io.IOException;
 import java.util.List;
 
 import org.springframework.core.io.ByteArrayResource;
@@ -18,7 +17,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.demoapp.demoapp.model.response.S3FileDTO;
-import com.demoapp.demoapp.service.AwsService;
+import com.demoapp.demoapp.service.interfaces.AwsService;
 
 @RestController
 @RequestMapping("/api/aws")
@@ -30,9 +29,14 @@ public class AwsController {
         this.awsService = awsService;
     }
 
+    /**
+     * Uploads a file to AWS S3.
+     * @param file the {@link MultipartFile file} to upload
+     * @return {@link ResponseEntity} with success or error message
+     */
     @PostMapping("s3/upload")
     @PreAuthorize("isAuthenticated()")
-    public ResponseEntity<String> uploadFile(@RequestParam("file") MultipartFile file) throws IOException {
+    public ResponseEntity<String> uploadFile(@RequestParam("file") MultipartFile file) {
         try {
             String objectKey = file.getOriginalFilename();
             awsService.uploadFile(objectKey, file);
@@ -43,6 +47,11 @@ public class AwsController {
         }
     }
 
+    /**
+     * Downloads a file from AWS S3.
+     * @param fileName the {@link String name} of the file to download
+     * @return {@link ResponseEntity} containing the file data or error message
+     */
     @GetMapping("s3/download/{fileName}")
     @PreAuthorize("isAuthenticated()")
     public ResponseEntity<ByteArrayResource> getFile(@PathVariable String fileName) {
@@ -57,6 +66,10 @@ public class AwsController {
         }
     }
 
+    /**
+     * Lists all files in AWS S3.
+     * @return {@link ResponseEntity} containing a list of files
+     */
     @GetMapping("s3/list")
     @PreAuthorize("isAuthenticated()")
     public ResponseEntity<List<S3FileDTO>> getFiles() {
@@ -64,6 +77,11 @@ public class AwsController {
         return ResponseEntity.ok(fileData);
     }
 
+    /**
+     * Deletes a file from AWS S3.
+     * @param fileName the {@link String name} of the file to delete
+     * @return {@link ResponseEntity} with success or error message
+     */
     @DeleteMapping("s3/delete/{fileName}")
     @PreAuthorize("isAuthenticated()")
     public ResponseEntity<String> deleteFile(@PathVariable String fileName) {

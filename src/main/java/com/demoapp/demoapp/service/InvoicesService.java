@@ -27,7 +27,7 @@ public class InvoicesService {
     /**
      * Handles Stripe webhook events related to invoices.
      * 
-     * @param event
+     * @param event the Stripe {@link Event}
      */
     public void handleEvent(Event event) {
         switch (event.getType()) {
@@ -44,7 +44,7 @@ public class InvoicesService {
     /**
      * Fetches all invoices and maps them to InvoiceDTOs.
      * 
-     * @return
+     * @return {@link List } containing {@link InvoiceDTO}
      */
     public List<InvoiceDTO> fetchInvoices() {
         return invoiceRepository.findAll().stream()
@@ -62,7 +62,7 @@ public class InvoicesService {
      * Updates or creates a StripeInvoice entity based on the provided Stripe
      * Invoice object.
      * 
-     * @param object
+     * @param object the Stripe {@link com.stripe.model.Invoice} object
      */
     public void updateInvoice(com.stripe.model.Invoice object) {
         Optional<StripeInvoice> invoice = invoiceRepository.findByProviderId(object.getId());

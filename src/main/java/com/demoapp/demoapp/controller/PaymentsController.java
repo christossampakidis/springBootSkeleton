@@ -17,7 +17,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.demoapp.demoapp.model.request.InvoiceRequest;
 import com.demoapp.demoapp.model.request.PaymentIntentRequest;
 import com.demoapp.demoapp.service.InvoicesService;
-import com.demoapp.demoapp.service.PaymentProvider;
+import com.demoapp.demoapp.service.interfaces.PaymentProvider;
 
 @RestController
 @RequestMapping("/api/payments")
@@ -25,16 +25,18 @@ import com.demoapp.demoapp.service.PaymentProvider;
 public class PaymentsController {
     final static String SELECTED_PROVIDER = "stripe";
 
-    @Autowired
-    InvoicesService invoicesService;
+    private final InvoicesService invoicesService;
 
-    @Autowired
-    private Map<String, PaymentProvider> paymentProviders;
+    private final Map<String, PaymentProvider> paymentProviders;
 
+    public PaymentsController(InvoicesService invoicesService, @Autowired Map<String, PaymentProvider> paymentProviders) {
+        this.invoicesService = invoicesService;
+        this.paymentProviders = paymentProviders;
+    }
     /**
      * Fetches all invoices.
      * 
-     * @return ResponseEntity with invoice data or error message.
+     * @return {@link ResponseEntity} with invoice data or error message.
      */
     @GetMapping("/invoices")
     @PreAuthorize("isAuthenticated()")
@@ -42,7 +44,6 @@ public class PaymentsController {
         try {
             return ResponseEntity.ok(Map.of("message", invoicesService.fetchInvoices()));
         } catch (Exception e) {
-            e.printStackTrace();
             return ResponseEntity.internalServerError()
                     .body(Map.of("message", "Error creating invoice"));
         }
@@ -51,18 +52,17 @@ public class PaymentsController {
     /**
      * Sends an invoice based on the provided invoice request.
      * 
-     * @param invoiceRequest
-     * @return
+     * @param invoiceRequest {@link InvoiceRequest} containing invoice details
+     * @return {@link ResponseEntity} with success or error message
      */
     @PostMapping("/invoice")
-    @PreAuthorize("isAuthenticated()")
+//    @PreAuthorize("isAuthenticated()")
     public ResponseEntity<Map<String, String>> sendInvoice(@RequestBody InvoiceRequest invoiceRequest) {
         try {
             PaymentProvider provider = paymentProviders.get(SELECTED_PROVIDER);
             provider.processInvoice(invoiceRequest);
             return ResponseEntity.ok(Map.of("message", "Invoice created successfully"));
         } catch (Exception e) {
-            e.printStackTrace();
             return ResponseEntity.internalServerError()
                     .body(Map.of("message", "Error creating invoice"));
         }
@@ -71,8 +71,8 @@ public class PaymentsController {
     /**
      * Voids an invoice by its ID.
      * 
-     * @param id
-     * @return
+     * @param id {@link Long} ID of the invoice to void
+     * @return {@link ResponseEntity} with success or error message
      */
     @DeleteMapping("/invoice/{id}")
     @PreAuthorize("isAuthenticated()")
@@ -82,7 +82,6 @@ public class PaymentsController {
             provider.voidInvoice(id);
             return ResponseEntity.ok(Map.of("message", "Invoice voided successfully"));
         } catch (Exception e) {
-            e.printStackTrace();
             return ResponseEntity.internalServerError()
                     .body(Map.of("message", "Error voiding invoice"));
         }
@@ -91,8 +90,8 @@ public class PaymentsController {
     /**
      * Creates a payment intent based on the provided payment intent request.
      * 
-     * @param invoiceRequest
-     * @return
+     * @param invoiceRequest {@link PaymentIntentRequest} containing payment intent details
+     * @return {@link ResponseEntity} with payment intent data or error message
      */
     @PostMapping("/payment-intent")
     @PreAuthorize("isAuthenticated()")
@@ -102,7 +101,6 @@ public class PaymentsController {
             Map<String, String> response = provider.createPaymentIntent(invoiceRequest);
             return ResponseEntity.ok(response);
         } catch (Exception e) {
-            e.printStackTrace();
             return ResponseEntity.internalServerError()
                     .body(Map.of("message", "Error creating payment intent"));
         }

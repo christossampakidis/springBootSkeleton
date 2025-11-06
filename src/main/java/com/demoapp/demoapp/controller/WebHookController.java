@@ -1,6 +1,6 @@
 package com.demoapp.demoapp.controller;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import com.demoapp.demoapp.service.interfaces.CustomersService;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -10,13 +10,11 @@ import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.demoapp.demoapp.service.CustomersService;
 import com.demoapp.demoapp.service.InvoicesService;
 import com.stripe.exception.SignatureVerificationException;
 import com.stripe.model.Event;
 import com.stripe.net.Webhook;
 
-import jakarta.servlet.http.HttpServletRequest;
 
 @RestController
 @RequestMapping("/webhooks")
@@ -24,26 +22,26 @@ public class WebHookController {
     @Value("${stripe.webhook.secret}")
     private String endpointSecret;
 
-    @Autowired
-    InvoicesService invoicesService;
+    private final InvoicesService invoicesService;
 
-    @Autowired
-    CustomersService customersService;
+    private final CustomersService customersService;
+
+    public WebHookController(InvoicesService invoicesService, CustomersService customersService) {
+        this.invoicesService = invoicesService;
+        this.customersService = customersService;
+    }
 
     /**
      * Handles Stripe webhook events related to invoices.
-     * 
-     * @param request
-     * @param payload
-     * @param sigHeader
-     * @return
+     *
+     * @param payload the request {@link String payload}
+     * @param sigHeader the {@link String Stripe signature header}
+     * @return {@link ResponseEntity} with status
      */
     @PostMapping("/invoices")
-    public ResponseEntity<String> handleInvoiceEvents(HttpServletRequest request, @RequestBody String payload,
+    public ResponseEntity<String> handleInvoiceEvents(@RequestBody String payload,
             @RequestHeader("Stripe-Signature") String sigHeader) {
-
         Event event;
-
         try {
             event = Webhook.constructEvent(payload, sigHeader, endpointSecret);
             invoicesService.handleEvent(event);
@@ -56,14 +54,13 @@ public class WebHookController {
 
     /**
      * Handles Stripe webhook events related to customers.
-     * 
-     * @param request
-     * @param payload
-     * @param sigHeader
-     * @return
+     *
+     * @param payload the request {@link String payload}
+     * @param sigHeader the {@link String Stripe signature header}
+     * @return {@link ResponseEntity} with status
      */
     @PostMapping("/customers")
-    public ResponseEntity<String> handleCustomerEvents(HttpServletRequest request, @RequestBody String payload,
+    public ResponseEntity<String> handleCustomerEvents(@RequestBody String payload,
             @RequestHeader("Stripe-Signature") String sigHeader) {
         Event event;
         try {
