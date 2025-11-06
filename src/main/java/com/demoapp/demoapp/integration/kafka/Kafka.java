@@ -16,7 +16,7 @@ public interface Kafka {
 
     /**
      * Subscribe to Kafka topic
-     * @param topic the {@link String topic} that we want to subscribe to
+     * @param topic the {@link String topic} that we want to subscribe toP
      */
     void subscribeToTopic(String topic);
 
