@@ -33,7 +33,7 @@ public class StripeService implements PaymentProvider {
             stripeClient.createInvoiceItem(customer, invoice, item);
         }
         stripeClient.sendInvoice(invoice);
-        kafkaService.sendMessage("demo-topic", "hello from StripeService");
+        kafkaService.sendMessage("invoices", "hello from StripeService");
     }
 
     @Override
