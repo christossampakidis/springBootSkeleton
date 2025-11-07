@@ -11,5 +11,9 @@
     {
       "name": "flyway.validate-on-migrate",
       "type": "java.lang.Boolean"
+    },
+    {
+      "name" : "STPAPIClient.shared.publishableKey",
+      "type" : "java.lang.String"
     }
 ] }
