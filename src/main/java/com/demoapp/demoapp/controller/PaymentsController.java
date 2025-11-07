@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.demoapp.demoapp.model.request.InvoiceRequest;
 import com.demoapp.demoapp.model.request.PaymentIntentRequest;
-import com.demoapp.demoapp.service.InvoicesService;
+import com.demoapp.demoapp.service.InvoicesServiceImpl;
 import com.demoapp.demoapp.service.interfaces.PaymentProvider;
 
 @RestController
@@ -25,11 +25,11 @@ import com.demoapp.demoapp.service.interfaces.PaymentProvider;
 public class PaymentsController {
     final static String SELECTED_PROVIDER = "stripe";
 
-    private final InvoicesService invoicesService;
+    private final InvoicesServiceImpl invoicesService;
 
     private final Map<String, PaymentProvider> paymentProviders;
 
-    public PaymentsController(InvoicesService invoicesService, @Autowired Map<String, PaymentProvider> paymentProviders) {
+    public PaymentsController(InvoicesServiceImpl invoicesService, @Autowired Map<String, PaymentProvider> paymentProviders) {
         this.invoicesService = invoicesService;
         this.paymentProviders = paymentProviders;
     }

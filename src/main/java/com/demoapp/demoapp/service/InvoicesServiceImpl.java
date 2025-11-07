@@ -3,6 +3,7 @@ package com.demoapp.demoapp.service;
 import java.util.List;
 import java.util.Optional;
 
+import com.demoapp.demoapp.service.interfaces.InvoicesService;
 import org.springframework.stereotype.Service;
 
 import com.demoapp.demoapp.entity.StripeCustomer;
@@ -14,21 +15,21 @@ import com.stripe.model.Event;
 import com.stripe.model.StripeObject;
 
 @Service
-public class InvoicesService {
+public class InvoicesServiceImpl implements InvoicesService {
 
     private final InvoiceRepository invoiceRepository;
     private final CustomerRepository customerRepository;
 
-    public InvoicesService(InvoiceRepository invoiceRepository, CustomerRepository customerRepository) {
+    public InvoicesServiceImpl(InvoiceRepository invoiceRepository, CustomerRepository customerRepository) {
         this.invoiceRepository = invoiceRepository;
         this.customerRepository = customerRepository;
     }
 
     /**
-     * Handles Stripe webhook events related to invoices.
-     * 
-     * @param event the Stripe {@link Event}
+     *
+     * {@inheritDoc}
      */
+    @Override
     public void handleEvent(Event event) {
         switch (event.getType()) {
             case "invoice.updated", "invoice.created", "invoice.finalized" -> {
@@ -42,10 +43,10 @@ public class InvoicesService {
     }
 
     /**
-     * Fetches all invoices and maps them to InvoiceDTOs.
-     * 
-     * @return {@link List } containing {@link InvoiceDTO}
+     *
+     * {@inheritDoc}
      */
+    @Override
     public List<InvoiceDTO> fetchInvoices() {
         return invoiceRepository.findAll().stream()
                 .map(invoice -> new InvoiceDTO(
@@ -58,12 +59,12 @@ public class InvoicesService {
                 .toList();
     }
 
+
     /**
-     * Updates or creates a StripeInvoice entity based on the provided Stripe
-     * Invoice object.
-     * 
-     * @param object the Stripe {@link com.stripe.model.Invoice} object
+     *
+     * {@inheritDoc}
      */
+    @Override
     public void updateInvoice(com.stripe.model.Invoice object) {
         Optional<StripeInvoice> invoice = invoiceRepository.findByProviderId(object.getId());
         if (invoice.isPresent()) {

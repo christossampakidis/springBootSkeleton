@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.demoapp.demoapp.service.InvoicesService;
+import com.demoapp.demoapp.service.InvoicesServiceImpl;
 import com.stripe.exception.SignatureVerificationException;
 import com.stripe.model.Event;
 import com.stripe.net.Webhook;
@@ -22,11 +22,11 @@ public class WebHookController {
     @Value("${stripe.webhook.secret}")
     private String endpointSecret;
 
-    private final InvoicesService invoicesService;
+    private final InvoicesServiceImpl invoicesService;
 
     private final CustomersService customersService;
 
-    public WebHookController(InvoicesService invoicesService, CustomersService customersService) {
+    public WebHookController(InvoicesServiceImpl invoicesService, CustomersService customersService) {
         this.invoicesService = invoicesService;
         this.customersService = customersService;
     }
