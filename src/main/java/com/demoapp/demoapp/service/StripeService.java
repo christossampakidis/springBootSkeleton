@@ -26,7 +26,7 @@ public class StripeService implements PaymentProvider {
     }
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     @Override
     public void processInvoice(InvoiceRequest invoiceRequest) throws Exception {
@@ -40,7 +40,7 @@ public class StripeService implements PaymentProvider {
     }
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     @Override
     public void voidInvoice(Long invoiceId) throws Exception {
@@ -48,7 +48,7 @@ public class StripeService implements PaymentProvider {
     }
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     @Override
     public Map<String, String> createPaymentIntent(PaymentIntentRequest paymentIntentRequest) throws Exception {

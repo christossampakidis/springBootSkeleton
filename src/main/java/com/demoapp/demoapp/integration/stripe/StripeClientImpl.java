@@ -50,7 +50,7 @@ public class StripeClientImpl implements StripeClient {
     }
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     @Override
     public Customer createCustomer(String email) throws Exception {
@@ -80,7 +80,7 @@ public class StripeClientImpl implements StripeClient {
     }
 
     /**
-     * @inheritDoc
+     *{@inheritDoc}
      */
     @Override
     public Customer retrieveCustomer(String providerId) throws Exception {
@@ -89,7 +89,7 @@ public class StripeClientImpl implements StripeClient {
     }
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     @Override
     public Invoice createInvoice(Customer customer) throws Exception {
@@ -109,7 +109,7 @@ public class StripeClientImpl implements StripeClient {
     }
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     @Override
     public void sendInvoice(Invoice invoice) throws Exception {
@@ -118,7 +118,7 @@ public class StripeClientImpl implements StripeClient {
     }
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     @Override
     public void createInvoiceItem(Customer customer, Invoice invoice, ItemDTO item) throws Exception {
@@ -144,7 +144,7 @@ public class StripeClientImpl implements StripeClient {
     }
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     @Override
     public void voidInvoice(String invoiceId) throws Exception {
@@ -154,7 +154,7 @@ public class StripeClientImpl implements StripeClient {
     }
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     @Override
     public PaymentIntent createPaymentIntent(PaymentIntentRequest request) throws Exception {

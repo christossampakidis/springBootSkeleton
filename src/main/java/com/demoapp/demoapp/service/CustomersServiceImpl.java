@@ -24,7 +24,7 @@ public class CustomersServiceImpl implements CustomersService {
     }
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     @Override
     public List<CustomerDTO> fetchCustomers() {
@@ -49,7 +49,7 @@ public class CustomersServiceImpl implements CustomersService {
     }
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     @Override
     public void createCustomer(Customer stripeCustomer) {
@@ -61,7 +61,7 @@ public class CustomersServiceImpl implements CustomersService {
     }
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     @Override
     public void deleteCustomer(Customer stripeCustomer) {

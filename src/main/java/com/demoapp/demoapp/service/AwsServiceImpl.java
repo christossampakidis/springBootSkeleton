@@ -36,7 +36,7 @@ public class AwsServiceImpl implements AwsService {
     }
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     @Override
     public FileDTO readFile(String objectKey) throws IOException {
@@ -62,7 +62,7 @@ public class AwsServiceImpl implements AwsService {
     }
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     @Override
     public void uploadFile(String objectKey, MultipartFile file) throws IOException {
@@ -85,7 +85,7 @@ public class AwsServiceImpl implements AwsService {
     }
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     @Override
     public List<S3FileDTO> getFileList() {
@@ -104,7 +104,7 @@ public class AwsServiceImpl implements AwsService {
     }
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     @Override
     public void deleteFile(String objectKey) {
