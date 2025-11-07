@@ -49,6 +49,9 @@ public class StripeClientImpl implements StripeClient {
         Stripe.apiKey = API_SECRET_KEY;
     }
 
+    /**
+     * @inheritDoc
+     */
     @Override
     public Customer createCustomer(String email) throws Exception {
         init();
@@ -76,12 +79,18 @@ public class StripeClientImpl implements StripeClient {
         }
     }
 
+    /**
+     * @inheritDoc
+     */
     @Override
     public Customer retrieveCustomer(String providerId) throws Exception {
         init();
         return Customer.retrieve(providerId);
     }
 
+    /**
+     * @inheritDoc
+     */
     @Override
     public Invoice createInvoice(Customer customer) throws Exception {
         init();
@@ -99,12 +108,18 @@ public class StripeClientImpl implements StripeClient {
         return stripeInvoice;
     }
 
+    /**
+     * @inheritDoc
+     */
     @Override
     public void sendInvoice(Invoice invoice) throws Exception {
         InvoiceSendInvoiceParams invoiceSendParams = InvoiceSendInvoiceParams.builder().build();
         invoice.sendInvoice(invoiceSendParams);
     }
 
+    /**
+     * @inheritDoc
+     */
     @Override
     public void createInvoiceItem(Customer customer, Invoice invoice, ItemDTO item) throws Exception {
         init();
@@ -128,6 +143,9 @@ public class StripeClientImpl implements StripeClient {
         itemRepository.save(newItem);
     }
 
+    /**
+     * @inheritDoc
+     */
     @Override
     public void voidInvoice(String invoiceId) throws Exception {
         init();
@@ -135,6 +153,9 @@ public class StripeClientImpl implements StripeClient {
         stripeInvoice.voidInvoice();
     }
 
+    /**
+     * @inheritDoc
+     */
     @Override
     public PaymentIntent createPaymentIntent(PaymentIntentRequest request) throws Exception {
         init();

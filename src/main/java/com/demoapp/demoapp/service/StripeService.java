@@ -25,6 +25,9 @@ public class StripeService implements PaymentProvider {
         this.stripeClient = stripeClient;
     }
 
+    /**
+     * @inheritDoc
+     */
     @Override
     public void processInvoice(InvoiceRequest invoiceRequest) throws Exception {
         Customer customer = stripeClient.createCustomer(invoiceRequest.getEmail());
@@ -36,11 +39,17 @@ public class StripeService implements PaymentProvider {
         kafkaService.sendMessage("invoices", "hello from StripeService");
     }
 
+    /**
+     * @inheritDoc
+     */
     @Override
     public void voidInvoice(Long invoiceId) throws Exception {
         stripeClient.voidInvoice(invoiceId.toString());
     }
 
+    /**
+     * @inheritDoc
+     */
     @Override
     public Map<String, String> createPaymentIntent(PaymentIntentRequest paymentIntentRequest) throws Exception {
         Map<String, String> response = new HashMap<>();

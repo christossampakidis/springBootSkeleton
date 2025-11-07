@@ -23,6 +23,10 @@ public class CustomersServiceImpl implements CustomersService {
         this.customerRepository = customerRepository;
     }
 
+    /**
+     * @inheritDoc
+     */
+    @Override
     public List<CustomerDTO> fetchCustomers() {
         return customerRepository.findAll().stream()
                 .map(customer -> new CustomerDTO(
@@ -44,6 +48,10 @@ public class CustomersServiceImpl implements CustomersService {
         }
     }
 
+    /**
+     * @inheritDoc
+     */
+    @Override
     public void createCustomer(Customer stripeCustomer) {
         StripeCustomer newCustomer = new StripeCustomer(
                 stripeCustomer.getEmail(),
@@ -52,6 +60,10 @@ public class CustomersServiceImpl implements CustomersService {
         customerRepository.save(newCustomer);
     }
 
+    /**
+     * @inheritDoc
+     */
+    @Override
     public void deleteCustomer(Customer stripeCustomer) {
         customerRepository.deleteByProviderId(stripeCustomer.getId());
     }

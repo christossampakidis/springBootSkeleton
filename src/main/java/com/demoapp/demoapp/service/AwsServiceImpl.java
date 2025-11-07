@@ -35,6 +35,9 @@ public class AwsServiceImpl implements AwsService {
         this.s3Client = s3Client;
     }
 
+    /**
+     * @inheritDoc
+     */
     @Override
     public FileDTO readFile(String objectKey) throws IOException {
         try (ResponseInputStream<GetObjectResponse> response = s3Client.getObject(
@@ -58,6 +61,9 @@ public class AwsServiceImpl implements AwsService {
         }
     }
 
+    /**
+     * @inheritDoc
+     */
     @Override
     public void uploadFile(String objectKey, MultipartFile file) throws IOException {
         String contentType = file.getContentType();
@@ -78,6 +84,9 @@ public class AwsServiceImpl implements AwsService {
         s3Client.putObject(request, RequestBody.fromBytes(file.getBytes()));
     }
 
+    /**
+     * @inheritDoc
+     */
     @Override
     public List<S3FileDTO> getFileList() {
         ListObjectsV2Request request = ListObjectsV2Request.builder()
@@ -94,6 +103,9 @@ public class AwsServiceImpl implements AwsService {
                 .toList();
     }
 
+    /**
+     * @inheritDoc
+     */
     @Override
     public void deleteFile(String objectKey) {
         s3Client.deleteObject(req -> req.bucket(bucket_name).key(objectKey));
