@@ -18,7 +18,7 @@ public interface StripeClient {
     Customer createCustomer(String email) throws Exception;
 
     /**
-     * 
+     * Returns the customer object from stripe
      * @param providerId the provider {@link String ID}  of the customer
      * @return the Stripe {@link Customer}  object
      * @throws Exception if an error occurs during retrieval
