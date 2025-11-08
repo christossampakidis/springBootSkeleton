@@ -2,6 +2,7 @@ package com.demoapp.demoapp.controller;
 
 import java.util.Map;
 
+import com.demoapp.demoapp.service.interfaces.InvoicesService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -16,7 +17,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.demoapp.demoapp.model.request.InvoiceRequest;
 import com.demoapp.demoapp.model.request.PaymentIntentRequest;
-import com.demoapp.demoapp.service.InvoicesServiceImpl;
 import com.demoapp.demoapp.service.interfaces.PaymentProvider;
 
 @RestController
@@ -25,11 +25,11 @@ import com.demoapp.demoapp.service.interfaces.PaymentProvider;
 public class PaymentsController {
     final static String SELECTED_PROVIDER = "stripe";
 
-    private final InvoicesServiceImpl invoicesService;
+    private final InvoicesService invoicesService;
 
     private final Map<String, PaymentProvider> paymentProviders;
 
-    public PaymentsController(InvoicesServiceImpl invoicesService, @Autowired Map<String, PaymentProvider> paymentProviders) {
+    public PaymentsController(InvoicesService invoicesService, @Autowired Map<String, PaymentProvider> paymentProviders) {
         this.invoicesService = invoicesService;
         this.paymentProviders = paymentProviders;
     }
@@ -56,7 +56,7 @@ public class PaymentsController {
      * @return {@link ResponseEntity} with success or error message
      */
     @PostMapping("/invoice")
-    @PreAuthorize("isAuthenticated()")
+//    @PreAuthorize("isAuthenticated()")
     public ResponseEntity<Map<String, String>> sendInvoice(@RequestBody InvoiceRequest invoiceRequest) {
         try {
             PaymentProvider provider = paymentProviders.get(SELECTED_PROVIDER);

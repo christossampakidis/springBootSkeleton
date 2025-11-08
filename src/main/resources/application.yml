@@ -1,3 +1,56 @@
 spring:
-  profiles:
-    active: dev
+  config:
+    import: classpath:env.properties
+  application:
+    name: demoapp
+  kafka:
+    bootstrap-servers: ${KAFKA_URL}
+    consumer:
+      group-id: ${KAFKA_GROUP}
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: ${OAUTH2_URL}
+
+  docker:
+    compose:
+      enabled: false
+
+  datasource:
+    url: ${DB_URL}
+    username: ${DB_USERNAME}
+    password: ${DB_PASSWORD}
+  cloud:
+    aws:
+      credentials:
+        access-key: ${AWS_ACCESS_KEY}
+        secret-key: ${AWS_SECRET_KEY}
+      region:
+        static: ${AWS_REGION}
+      endpoint: ${AWS_S3_ENDPOINT}
+      s3:
+        path-style-access-enabled: true
+        bucket-name: ${AWS_S3_BUCKET}
+
+
+server:
+  error:
+    include-stacktrace: never
+    include-message: never
+    include-binding-errors: never
+
+app:
+  cors:
+    allowed-origin: http://localhost:3000
+
+stripe:
+  key:
+    secret: ${STRIPE_KEY}
+  webhook:
+    secret: ${STRIPE_WEBHOOK}
+
+flyway:
+  locations: classpath:db/migration
+  baseline-on-migrate: true
+  validate-on-migrate: true
