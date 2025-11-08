@@ -1,4 +1,4 @@
-package com.demoapp.demoapp.model.response;
+package com.demoapp.demoapp.model.dto;
 
 import java.time.Instant;
 

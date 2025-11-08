@@ -11,7 +11,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.demoapp.demoapp.model.dto.FileDTO;
-import com.demoapp.demoapp.model.response.S3FileDTO;
+import com.demoapp.demoapp.model.dto.S3FileDTO;
 
 import software.amazon.awssdk.core.ResponseInputStream;
 import software.amazon.awssdk.core.sync.RequestBody;

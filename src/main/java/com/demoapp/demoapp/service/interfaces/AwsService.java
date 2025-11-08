@@ -6,7 +6,7 @@ import java.util.List;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.demoapp.demoapp.model.dto.FileDTO;
-import com.demoapp.demoapp.model.response.S3FileDTO;
+import com.demoapp.demoapp.model.dto.S3FileDTO;
 
 public interface AwsService {
 

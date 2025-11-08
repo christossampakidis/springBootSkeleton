@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
-import com.demoapp.demoapp.model.response.S3FileDTO;
+import com.demoapp.demoapp.model.dto.S3FileDTO;
 import com.demoapp.demoapp.service.interfaces.AwsService;
 
 @RestController
