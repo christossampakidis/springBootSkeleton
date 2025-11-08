@@ -88,9 +88,10 @@ public class AwsServiceImpl implements AwsService {
      * {@inheritDoc}
      */
     @Override
-    public List<S3FileDTO> getFileList() {
+    public List<S3FileDTO> getFileList(String query) {
         ListObjectsV2Request request = ListObjectsV2Request.builder()
                 .bucket(bucket_name)
+                .prefix(query)
                 .build();
 
         ListObjectsV2Response response = s3Client.listObjectsV2(request);

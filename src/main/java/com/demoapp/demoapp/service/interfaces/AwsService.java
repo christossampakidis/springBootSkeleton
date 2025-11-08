@@ -40,6 +40,6 @@ public interface AwsService {
      * 
      * @return a {@link List} of {@link S3FileDTO} containing file names
      */
-    List<S3FileDTO> getFileList();
+    List<S3FileDTO> getFileList(String query);
 
 }

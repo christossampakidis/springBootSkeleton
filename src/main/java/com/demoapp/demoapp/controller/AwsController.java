@@ -72,8 +72,8 @@ public class AwsController {
      */
     @GetMapping("s3/list")
     @PreAuthorize("isAuthenticated()")
-    public ResponseEntity<List<S3FileDTO>> getFiles() {
-        var fileData = awsService.getFileList();
+    public ResponseEntity<List<S3FileDTO>> getFiles(@RequestParam(required = false, defaultValue = "") String query) {
+        var fileData = awsService.getFileList(query);
         return ResponseEntity.ok(fileData);
     }
 
