@@ -1,6 +1,6 @@
 spring:
-  config:
-    import: classpath:env.properties
+  profiles:
+    active: ${SPRING_PROFILE:dev}
   application:
     name: demoapp
   kafka:
