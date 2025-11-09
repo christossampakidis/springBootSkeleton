@@ -1,9 +1,11 @@
 package com.demoapp.demoapp.service;
 
-import java.util.List;
 import java.util.Optional;
 
 import com.demoapp.demoapp.service.interfaces.InvoicesService;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import com.demoapp.demoapp.entity.StripeCustomer;
@@ -47,16 +49,16 @@ public class InvoicesServiceImpl implements InvoicesService {
      * {@inheritDoc}
      */
     @Override
-    public List<InvoiceDTO> fetchInvoices() {
-        return invoiceRepository.findAll().stream()
+    public Page<InvoiceDTO> fetchInvoices(int page, int size) {
+        Pageable pageable = PageRequest.of(page, size);
+        return invoiceRepository.findAll(pageable)
                 .map(invoice -> new InvoiceDTO(
                         invoice.getId(),
                         invoice.getStatus(),
                         invoice.getCustomer().getEmail(),
                         invoice.getInvoiceNumber(),
                         invoice.getCreatedAt(),
-                        invoice.getDaysExpire()))
-                .toList();
+                        invoice.getDaysExpire()));
     }
 
 
