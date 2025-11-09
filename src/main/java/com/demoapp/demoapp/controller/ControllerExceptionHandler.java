@@ -9,57 +9,47 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 import software.amazon.awssdk.services.s3.model.NoSuchBucketException;
 
 import java.io.IOException;
+import java.util.List;
+import java.util.Map;
 
 @RestControllerAdvice
 public class ControllerExceptionHandler {
 
-    /**
-     * Handles validation exceptions.
-     * @param e the {@link MethodArgumentNotValidException exception}
-     * @return {@link ResponseEntity} with error message
-     */
+    private ResponseEntity<Map<String, Object>> buildResponse(HttpStatus status, String message, List<String> details) {
+        return ResponseEntity.status(status).body(Map.of(
+                "status", "error",
+                "message", message,
+                "details", details
+        ));
+    }
+
     @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ResponseEntity<String> handleValidationException(MethodArgumentNotValidException e) {
-        return ResponseEntity.badRequest().body(e.getMessage());
+    public ResponseEntity<Map<String, Object>> handleValidationException(MethodArgumentNotValidException e) {
+        List<String> errors = e.getBindingResult()
+                .getFieldErrors()
+                .stream()
+                .map(err -> err.getField() + ": " + err.getDefaultMessage())
+                .toList();
+        return buildResponse(HttpStatus.BAD_REQUEST, "Validation failed", errors);
     }
 
-    /**
-     * Handles I/O exceptions.
-     * @param e the {@link IOException exception}
-     * @return {@link ResponseEntity} with error message
-     */
     @ExceptionHandler(IOException.class)
-    public ResponseEntity<String> handleIOException(IOException e) {
-        return ResponseEntity.internalServerError().body(e.getMessage());
+    public ResponseEntity<Map<String, Object>> handleIOException(IOException e) {
+        return buildResponse(HttpStatus.INTERNAL_SERVER_ERROR, "I/O error occurred", List.of(e.getMessage()));
     }
 
-    /**
-     * Handles authorization denied exceptions.
-     * @param e the {@link AuthorizationDeniedException exception}
-     * @return {@link ResponseEntity} with error message
-     */
     @ExceptionHandler(AuthorizationDeniedException.class)
-    public ResponseEntity<String> handleAuthorizationException(AuthorizationDeniedException e) {
-        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(e.getMessage());
+    public ResponseEntity<Map<String, Object>> handleAuthorizationException(AuthorizationDeniedException e) {
+        return buildResponse(HttpStatus.FORBIDDEN, "Access denied", List.of(e.getMessage()));
     }
 
-    /**
-     * Handles NoSuchBucket exceptions.
-     * @param e the {@link NoSuchBucketException exception}
-     * @return {@link ResponseEntity} with error message
-     */
     @ExceptionHandler(NoSuchBucketException.class)
-    public ResponseEntity<String> handleNoSuchBucket(NoSuchBucketException e) {
-        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
+    public ResponseEntity<Map<String, Object>> handleNoSuchBucket(NoSuchBucketException e) {
+        return buildResponse(HttpStatus.INTERNAL_SERVER_ERROR, "S3 bucket not found", List.of(e.getMessage()));
     }
 
-    /**
-     * Handles generic exceptions.
-     * @param e the {@link Exception exception}
-     * @return {@link ResponseEntity} with error message
-     */
     @ExceptionHandler(Exception.class)
-    public ResponseEntity<String> handleGenericException(Exception e) {
-        return ResponseEntity.internalServerError().body(e.getMessage());
+    public ResponseEntity<Map<String, Object>> handleGenericException(Exception e) {
+        return buildResponse(HttpStatus.INTERNAL_SERVER_ERROR, "An unexpected error occurred", List.of(e.getMessage()));
     }
 }
