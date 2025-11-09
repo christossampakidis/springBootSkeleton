@@ -3,6 +3,7 @@ package com.demoapp.demoapp.controller;
 import java.util.Map;
 
 import com.demoapp.demoapp.service.interfaces.InvoicesService;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -41,12 +42,7 @@ public class PaymentsController {
     @GetMapping("/invoices")
     @PreAuthorize("isAuthenticated()")
     public ResponseEntity<Map<String, Object>> getInvoices() {
-        try {
             return ResponseEntity.ok(Map.of("message", invoicesService.fetchInvoices()));
-        } catch (Exception e) {
-            return ResponseEntity.internalServerError()
-                    .body(Map.of("message", "Error creating invoice"));
-        }
     }
 
     /**
@@ -57,15 +53,10 @@ public class PaymentsController {
      */
     @PostMapping("/invoice")
     @PreAuthorize("isAuthenticated()")
-    public ResponseEntity<Map<String, String>> sendInvoice(@RequestBody InvoiceRequest invoiceRequest) {
-        try {
+    public ResponseEntity<Map<String, String>> sendInvoice(@RequestBody @Valid InvoiceRequest invoiceRequest) throws Exception{
             PaymentProvider provider = paymentProviders.get(SELECTED_PROVIDER);
             provider.processInvoice(invoiceRequest);
             return ResponseEntity.ok(Map.of("message", "Invoice created successfully"));
-        } catch (Exception e) {
-            return ResponseEntity.internalServerError()
-                    .body(Map.of("message", "Error creating invoice"));
-        }
     }
 
     /**
@@ -76,15 +67,10 @@ public class PaymentsController {
      */
     @DeleteMapping("/invoice/{id}")
     @PreAuthorize("isAuthenticated()")
-    public ResponseEntity<Map<String, String>> voidInvoice(@PathVariable("id") Long id) {
-        try {
+    public ResponseEntity<Map<String, String>> voidInvoice(@PathVariable("id") Long id) throws Exception {
             PaymentProvider provider = paymentProviders.get(SELECTED_PROVIDER);
             provider.voidInvoice(id);
             return ResponseEntity.ok(Map.of("message", "Invoice voided successfully"));
-        } catch (Exception e) {
-            return ResponseEntity.internalServerError()
-                    .body(Map.of("message", "Error voiding invoice"));
-        }
     }
 
     /**
@@ -95,14 +81,9 @@ public class PaymentsController {
      */
     @PostMapping("/payment-intent")
     @PreAuthorize("isAuthenticated()")
-    public ResponseEntity<Map<String, String>> createPaymentIntent(@RequestBody PaymentIntentRequest invoiceRequest) {
-        try {
+    public ResponseEntity<Map<String, String>> createPaymentIntent(@RequestBody @Valid PaymentIntentRequest invoiceRequest) throws Exception{
             PaymentProvider provider = paymentProviders.get(SELECTED_PROVIDER);
             Map<String, String> response = provider.createPaymentIntent(invoiceRequest);
             return ResponseEntity.ok(response);
-        } catch (Exception e) {
-            return ResponseEntity.internalServerError()
-                    .body(Map.of("message", "Error creating payment intent"));
-        }
     }
 }

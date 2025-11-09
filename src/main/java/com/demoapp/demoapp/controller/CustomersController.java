@@ -30,11 +30,6 @@ public class CustomersController {
     @GetMapping
     @PreAuthorize("isAuthenticated()")
     public ResponseEntity<Map<String, Object>> getCustomers() {
-        try {
             return ResponseEntity.ok(Map.of("message", customersService.fetchCustomers()));
-        } catch (Exception e) {
-            return ResponseEntity.internalServerError()
-                    .body(Map.of("message", "Error fetching customers"));
-        }
     }
 }

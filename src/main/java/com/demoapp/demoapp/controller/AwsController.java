@@ -1,9 +1,9 @@
 package com.demoapp.demoapp.controller;
 
+import java.io.IOException;
 import java.util.List;
 
 import org.springframework.core.io.ByteArrayResource;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -36,15 +36,10 @@ public class AwsController {
      */
     @PostMapping("s3/upload")
     @PreAuthorize("isAuthenticated()")
-    public ResponseEntity<String> uploadFile(@RequestParam("file") MultipartFile file) {
-        try {
+    public ResponseEntity<String> uploadFile(@RequestParam("file") MultipartFile file) throws IOException {
             String objectKey = file.getOriginalFilename();
             awsService.uploadFile(objectKey, file);
             return ResponseEntity.ok("File uploaded successfully!");
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body("Error uploading file: " + e.getMessage());
-        }
     }
 
     /**
@@ -54,16 +49,12 @@ public class AwsController {
      */
     @GetMapping("s3/download/{fileName}")
     @PreAuthorize("isAuthenticated()")
-    public ResponseEntity<ByteArrayResource> getFile(@PathVariable String fileName) {
-        try {
+    public ResponseEntity<ByteArrayResource> getFile(@PathVariable String fileName) throws IOException {
             var fileData = awsService.readFile(fileName);
             return ResponseEntity.ok()
                     .contentType(MediaType.parseMediaType(fileData.getContentType()))
                     .header("Content-Disposition", "inline; filename=\"" + fileData.getFileName() + "\"")
                     .body(new ByteArrayResource(fileData.getContent()));
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
-        }
     }
 
     /**
@@ -85,12 +76,7 @@ public class AwsController {
     @DeleteMapping("s3/delete/{fileName}")
     @PreAuthorize("isAuthenticated()")
     public ResponseEntity<String> deleteFile(@PathVariable String fileName) {
-        try {
             awsService.deleteFile(fileName);
             return ResponseEntity.ok("File deleted successfully!");
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body("Error deleting file: " + e.getMessage());
-        }
     }
 }
