@@ -24,7 +24,6 @@ public class InvoiceRequest {
     @Getter
     @Setter
     @NoArgsConstructor
-    @AllArgsConstructor
     public static class ItemDTO {
         @NotBlank
         private String description;
