@@ -6,31 +6,24 @@ import java.util.List;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotEmpty;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
-@Getter
-@Setter
-@NoArgsConstructor
+@Data
 public class InvoiceRequest {
     @NotBlank
     @Email
-    private String email;
+    private final String email;
     @NotEmpty
-    private List<ItemDTO> items;
+    private final List<ItemDTO> items;
 
-    @Getter
-    @Setter
-    @NoArgsConstructor
+    @Data
     public static class ItemDTO {
         @NotBlank
-        private String description;
+        private final String description;
         @NotBlank
-        private BigDecimal unitAmount;
+        private final BigDecimal unitAmount;
         @NotBlank
-        private Long quantity;
+        private final Long quantity;
 
     }
 }

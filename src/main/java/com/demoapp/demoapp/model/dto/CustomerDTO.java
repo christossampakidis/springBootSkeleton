@@ -2,22 +2,11 @@ package com.demoapp.demoapp.model.dto;
 
 import java.util.Date;
 
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.Data;
 
-@Getter
-@Setter
-@NoArgsConstructor
+@Data
 public class CustomerDTO {
-    private Long id;
-    private String email;
-    private Date createdAt;
-
-    public CustomerDTO(Long id, String email, Date createdAt) {
-        this.id = id;
-        this.email = email;
-        this.createdAt = createdAt;
-    }
-
+    private final Long id;
+    private final String email;
+    private final  Date createdAt;
 }

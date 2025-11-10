@@ -1,20 +1,10 @@
 package com.demoapp.demoapp.model.dto;
 
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.Data;
 
-@Getter
-@Setter
-@NoArgsConstructor
+@Data
 public class FileDTO {
-    private byte[] content;
-    private String contentType;
-    private String fileName;
-
-    public FileDTO(byte[] content, String contentType, String fileName) {
-        this.content = content;
-        this.contentType = contentType;
-        this.fileName = fileName;
-    }
+    private final byte[] content;
+    private final String contentType;
+    private final String fileName;
 }

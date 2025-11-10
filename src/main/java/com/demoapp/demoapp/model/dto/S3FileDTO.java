@@ -1,16 +1,13 @@
 package com.demoapp.demoapp.model.dto;
 
+import lombok.Data;
+
 import java.time.Instant;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.Setter;
 
-@Getter
-@Setter
-@AllArgsConstructor
+@Data
 public class S3FileDTO {
-    private String name;
-    private Long size;
-    private Instant lastModified;
+    private final String name;
+    private final Long size;
+    private final Instant lastModified;
 }
