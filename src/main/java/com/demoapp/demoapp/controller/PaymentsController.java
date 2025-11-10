@@ -2,9 +2,12 @@ package com.demoapp.demoapp.controller;
 
 import java.util.Map;
 
+import com.demoapp.demoapp.model.dto.InvoiceDTO;
+import com.demoapp.demoapp.model.dto.PageDTO;
 import com.demoapp.demoapp.service.interfaces.InvoicesService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -34,11 +37,19 @@ public class PaymentsController {
      */
     @GetMapping("/invoices")
     @PreAuthorize("isAuthenticated()")
-    public ResponseEntity<Map<String, Object>> getInvoices(
+    public ResponseEntity<PageDTO<InvoiceDTO>> getInvoices(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size
     ) {
-            return ResponseEntity.ok(Map.of("message", invoicesService.fetchInvoices(page, size)));
+            Page<InvoiceDTO> invoices = invoicesService.fetchInvoices(page, size);
+        var dto = new PageDTO<>(
+                invoices.getContent(),
+                invoices.getNumber(),
+                invoices.getSize(),
+                invoices.getTotalElements(),
+                invoices.getTotalPages(),
+                invoices.isLast());
+        return ResponseEntity.ok(dto);
     }
 
     /**
