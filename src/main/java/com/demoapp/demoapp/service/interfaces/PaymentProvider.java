@@ -31,4 +31,12 @@ public interface PaymentProvider {
      * @throws Exception if an error occurs during creation
      */
     Map<String, String> createPaymentIntent(PaymentIntentRequest paymentIntentRequest) throws Exception;
+
+    /**
+     * Creates a connect account.
+     *
+     * @return a {@link String} with connect account secret
+     * @throws Exception if an error occurs during creation
+     */
+    String createConnectAccount() throws Exception;
 }

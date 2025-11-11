@@ -61,4 +61,12 @@ public class StripeService implements PaymentProvider {
 
         return response;
     }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public String createConnectAccount() throws Exception {
+        return stripeClient.createConnectAccount().getClientSecret();
+    }
 }

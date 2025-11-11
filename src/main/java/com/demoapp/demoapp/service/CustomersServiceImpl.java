@@ -53,11 +53,11 @@ public class CustomersServiceImpl implements CustomersService {
      */
     @Override
     public void createCustomer(Customer stripeCustomer) {
-        StripeCustomer newCustomer = new StripeCustomer(
-                stripeCustomer.getEmail(),
-                stripeCustomer.getId()
+        customerRepository.save(StripeCustomer.builder()
+                .email(stripeCustomer.getEmail())
+                .providerId(stripeCustomer.getId())
+                .build()
         );
-        customerRepository.save(newCustomer);
     }
 
     /**

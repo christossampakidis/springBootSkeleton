@@ -3,6 +3,7 @@ package com.demoapp.demoapp.entity;
 import java.math.BigDecimal;
 import java.util.Date;
 
+import lombok.*;
 import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.SQLRestriction;
 
@@ -17,16 +18,16 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import jakarta.persistence.Temporal;
 import jakarta.persistence.TemporalType;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import org.hibernate.annotations.TenantId;
 
 @Entity
 @Table(name = "items")
 @Getter
 @Setter
+@Builder
+@AllArgsConstructor
 @NoArgsConstructor
-@SQLDelete(sql = "UPDATE items SET deleted = CURRENT_TIMESTAMP WHERE id=?")
+@SQLDelete(sql = "UPDATE items SET deleted_at = CURRENT_TIMESTAMP WHERE id=?")
 @SQLRestriction("deleted_at IS NULL")
 public class StripeItem {
 
@@ -60,5 +61,9 @@ public class StripeItem {
 
     @Column(name = "deleted_at")
     private Date deletedAt;
+
+    @TenantId
+    @Column(name = "tenant_id", nullable = false)
+    private String tenant;
 
 }

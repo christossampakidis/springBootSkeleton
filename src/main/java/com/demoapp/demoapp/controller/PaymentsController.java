@@ -59,7 +59,7 @@ public class PaymentsController {
      * @return {@link ResponseEntity} with success or error message
      */
     @PostMapping("/invoice")
-    @PreAuthorize("isAuthenticated()")
+//    @PreAuthorize("isAuthenticated()")
     public ResponseEntity<Map<String, String>> sendInvoice(@RequestBody @Valid InvoiceRequest invoiceRequest) throws Exception{
             PaymentProvider provider = paymentProviders.get(SELECTED_PROVIDER);
             provider.processInvoice(invoiceRequest);
@@ -92,5 +92,17 @@ public class PaymentsController {
             PaymentProvider provider = paymentProviders.get(SELECTED_PROVIDER);
             Map<String, String> response = provider.createPaymentIntent(invoiceRequest);
             return ResponseEntity.ok(response);
+    }
+
+    /**
+     * Creates a connect account.
+     *
+     * @return {@link ResponseEntity} with connect account data or error message
+     */
+    @PostMapping("/connect-account/create")
+//    @PreAuthorize("isAuthenticated()")
+    public ResponseEntity<Map<String, String>> createConnectAccount() throws Exception{
+        PaymentProvider provider = paymentProviders.get(SELECTED_PROVIDER);
+        return ResponseEntity.ok(Map.of("message", provider.createConnectAccount()));
     }
 }

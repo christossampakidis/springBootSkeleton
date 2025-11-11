@@ -2,6 +2,8 @@ package com.demoapp.demoapp.integration.stripe;
 
 import java.util.List;
 
+import com.stripe.model.*;
+import com.stripe.param.*;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
@@ -14,16 +16,6 @@ import com.demoapp.demoapp.repository.CustomerRepository;
 import com.demoapp.demoapp.repository.InvoiceRepository;
 import com.demoapp.demoapp.repository.ItemRepository;
 import com.stripe.Stripe;
-import com.stripe.model.Customer;
-import com.stripe.model.Invoice;
-import com.stripe.model.InvoiceItem;
-import com.stripe.model.PaymentIntent;
-import com.stripe.param.CustomerCreateParams;
-import com.stripe.param.CustomerListParams;
-import com.stripe.param.InvoiceCreateParams;
-import com.stripe.param.InvoiceItemCreateParams;
-import com.stripe.param.InvoiceSendInvoiceParams;
-import com.stripe.param.PaymentIntentCreateParams;
 
 @Component
 public class StripeClientImpl implements StripeClient {
@@ -72,7 +64,12 @@ public class StripeClientImpl implements StripeClient {
                         .build();
                 customer = Customer.create(createParams);
             }
-            customerRepository.save(new StripeCustomer(email, customer.getId()));
+            customerRepository.save(
+                    StripeCustomer.builder()
+                            .email(email)
+                            .providerId(customer.getId())
+                            .build()
+                    );
             return customer;
         } else {
             return Customer.retrieve(localCustomer.getProviderId());
@@ -132,15 +129,15 @@ public class StripeClientImpl implements StripeClient {
                 .setQuantity(item.getQuantity())
                 .build();
         InvoiceItem stripeItem = InvoiceItem.create(invoiceItemParams);
-
-        StripeItem newItem = new StripeItem();
-        newItem.setInvoice(invoiceRepository.findByProviderId(invoice.getId()).orElse(null));
-        newItem.setProviderId(stripeItem.getId());
-        newItem.setDescription(item.getDescription());
-        newItem.setUnitAmount(item.getUnitAmount());
-        newItem.setQuantity(item.getQuantity());
-        newItem.setCurrency("EUR");
-        itemRepository.save(newItem);
+        itemRepository.save(StripeItem.builder()
+                .invoice(invoiceRepository.findByProviderId(invoice.getId()).orElse(null))
+                .providerId(stripeItem.getId())
+                .description(item.getDescription())
+                .unitAmount(item.getUnitAmount())
+                .quantity(item.getQuantity())
+                .currency("EUR")
+                .build()
+        );
     }
 
     /**
@@ -178,5 +175,30 @@ public class StripeClientImpl implements StripeClient {
                 .build();
 
         return PaymentIntent.create(params);
+    }
+
+    public AccountSession createConnectAccount() throws Exception {
+        init();
+        AccountCreateParams params =
+                AccountCreateParams.builder()
+                        .setType(AccountCreateParams.Type.EXPRESS)
+                        .setCountry("US")
+                        .setEmail("christossaba@gmail.com")
+                        .build();
+        Account account = Account.create(params);
+        return AccountSession.create(
+                AccountSessionCreateParams.builder()
+                        .setAccount(account.getId())
+                        .setComponents(
+                                AccountSessionCreateParams.Components.builder()
+                                        .setAccountOnboarding(
+                                                AccountSessionCreateParams.Components.AccountOnboarding.builder()
+                                                        .setEnabled(true)
+                                                        .build()
+                                        )
+                                        .build()
+                        )
+                        .build()
+        );
     }
 }
