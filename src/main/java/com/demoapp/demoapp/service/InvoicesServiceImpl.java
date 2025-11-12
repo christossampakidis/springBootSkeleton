@@ -87,23 +87,22 @@ public class InvoicesServiceImpl implements InvoicesService {
             invoiceRepository.save(existingInvoice);
         } else {
             StripeCustomer customer = customerRepository.findByProviderId(object.getCustomer()).orElseThrow();
-            StripeInvoice createdInvoice = new StripeInvoice(
-                    customer,
-                    object.getNumber(),
-                    object.getStatus(),
-                    object.getId(),
-                    object.getAmountDue(),
-                    object.getAmountPaid(),
-                    object.getAmountRemaining(),
-                    object.getAmountShipping(),
-                    object.getSubtotal(),
-                    object.getSubtotalExcludingTax(),
-                    object.getTotal(),
-                    object.getTotalExcludingTax(),
-                    object.getBillingReason(),
-                    object.getDueDate(),
-                    object.toJson());
-            invoiceRepository.save(createdInvoice);
+            invoiceRepository.save(StripeInvoice.builder()
+                    .customer(customer)
+                    .invoiceNumber(object.getNumber())
+                    .status(object.getStatus())
+                    .providerId(object.getId())
+                    .amountDue(object.getAmountDue())
+                    .amountRemaining(object.getAmountRemaining())
+                    .amountShipping(object.getAmountShipping())
+                    .subtotal(object.getSubtotal())
+                    .subtotalExcludingTax(object.getSubtotalExcludingTax())
+                    .total(object.getTotal())
+                    .totalExcludingTax(object.getTotalExcludingTax())
+                    .billingReason(object.getBillingReason())
+                    .daysExpire(object.getDueDate())
+                    .metadata(object.toJson())
+                    .build());
         }
 
     }
