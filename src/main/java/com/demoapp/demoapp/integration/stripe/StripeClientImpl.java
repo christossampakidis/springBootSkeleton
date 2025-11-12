@@ -72,7 +72,10 @@ public class StripeClientImpl implements StripeClient {
                         .build();
                 customer = Customer.create(createParams);
             }
-            customerRepository.save(new StripeCustomer(email, customer.getId()));
+            customerRepository.save(StripeCustomer.builder()
+                    .email(email)
+                    .providerId(customer.getId())
+                    .build());
             return customer;
         } else {
             return Customer.retrieve(localCustomer.getProviderId());
@@ -101,10 +104,11 @@ public class StripeClientImpl implements StripeClient {
                 .setDaysUntilDue(30L)
                 .build();
         Invoice stripeInvoice = Invoice.create(invoiceParams);
-        StripeInvoice newInvoice = new StripeInvoice();
-        newInvoice.setCustomer(customerRepository.findByProviderId(id).orElse(null));
-        newInvoice.setProviderId(stripeInvoice.getId());
-        invoiceRepository.save(newInvoice);
+        invoiceRepository.save(StripeInvoice.builder()
+                .customer(customerRepository.findByProviderId(id).orElse(null))
+                .providerId(stripeInvoice.getId())
+                .build()
+        );
         return stripeInvoice;
     }
 
@@ -124,23 +128,24 @@ public class StripeClientImpl implements StripeClient {
     public void createInvoiceItem(Customer customer, Invoice invoice, ItemDTO item) throws Exception {
         init();
         InvoiceItemCreateParams invoiceItemParams = InvoiceItemCreateParams.builder()
-                .setDescription(item.getDescription())
+                .setDescription(item.description())
                 .setCustomer(customer.getId())
-                .setUnitAmountDecimal(item.getUnitAmount())
+                .setUnitAmountDecimal(item.unitAmount())
                 .setInvoice(invoice.getId())
                 .setCurrency("EUR")
-                .setQuantity(item.getQuantity())
+                .setQuantity(item.quantity())
                 .build();
         InvoiceItem stripeItem = InvoiceItem.create(invoiceItemParams);
 
-        StripeItem newItem = new StripeItem();
-        newItem.setInvoice(invoiceRepository.findByProviderId(invoice.getId()).orElse(null));
-        newItem.setProviderId(stripeItem.getId());
-        newItem.setDescription(item.getDescription());
-        newItem.setUnitAmount(item.getUnitAmount());
-        newItem.setQuantity(item.getQuantity());
-        newItem.setCurrency("EUR");
-        itemRepository.save(newItem);
+        itemRepository.save(StripeItem.builder()
+                .invoice(invoiceRepository.findByProviderId(invoice.getId()).orElse(null))
+                .providerId(stripeItem.getId())
+                .description(item.description())
+                .unitAmount(item.unitAmount())
+                .quantity(item.quantity())
+                .currency("EUR")
+                .build()
+        );
     }
 
     /**
@@ -160,7 +165,7 @@ public class StripeClientImpl implements StripeClient {
     public PaymentIntent createPaymentIntent(PaymentIntentRequest request) throws Exception {
         init();
         Customer stripeCustomer;
-        String email = request.getEmail();
+        String email = request.email();
 
         StripeCustomer customer = customerRepository.findByEmail(email).orElse(null);
         if (customer == null) {
@@ -170,7 +175,7 @@ public class StripeClientImpl implements StripeClient {
         }
 
         PaymentIntentCreateParams params = PaymentIntentCreateParams.builder()
-                .setAmount(request.getAmount())
+                .setAmount(request.amount())
                 .setCurrency("eur")
                 .setCustomer(stripeCustomer.getId())
                 .addPaymentMethodType("card")

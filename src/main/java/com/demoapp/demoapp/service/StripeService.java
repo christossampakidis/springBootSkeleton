@@ -30,9 +30,9 @@ public class StripeService implements PaymentProvider {
      */
     @Override
     public void processInvoice(InvoiceRequest invoiceRequest) throws Exception {
-        Customer customer = stripeClient.createCustomer(invoiceRequest.getEmail());
+        Customer customer = stripeClient.createCustomer(invoiceRequest.email());
         Invoice invoice = stripeClient.createInvoice(customer);
-        for (ItemDTO item : invoiceRequest.getItems()) {
+        for (ItemDTO item : invoiceRequest.items()) {
             stripeClient.createInvoiceItem(customer, invoice, item);
         }
         stripeClient.sendInvoice(invoice);

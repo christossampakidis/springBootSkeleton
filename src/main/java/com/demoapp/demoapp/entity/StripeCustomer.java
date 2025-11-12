@@ -3,6 +3,7 @@ package com.demoapp.demoapp.entity;
 import java.util.Date;
 import java.util.List;
 
+import lombok.*;
 import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.SQLRestriction;
 
@@ -15,15 +16,14 @@ import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import jakarta.persistence.Temporal;
 import jakarta.persistence.TemporalType;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
 
 @Entity
 @Table(name = "customers")
 @Getter
 @Setter
 @NoArgsConstructor
+@AllArgsConstructor
+@Builder
 @SQLDelete(sql = "UPDATE customers SET deleted_at = CURRENT_TIMESTAMP WHERE id=?")
 @SQLRestriction("deleted_at IS NULL")
 public class StripeCustomer {
@@ -57,10 +57,4 @@ public class StripeCustomer {
 
     @Column(name = "deleted_at")
     private Date deletedAt;
-
-    public StripeCustomer(String email, String providerId) {
-        this.email = email;
-        this.providerId = providerId;
-    }
-
 }

@@ -2,6 +2,7 @@ package com.demoapp.demoapp.entity;
 
 import java.util.Date;
 
+import lombok.*;
 import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.SQLRestriction;
 
@@ -17,15 +18,14 @@ import jakarta.persistence.Table;
 import jakarta.persistence.Temporal;
 import jakarta.persistence.TemporalType;
 import jakarta.persistence.UniqueConstraint;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
 
 @Entity
 @Table(name = "invoices", uniqueConstraints = { @UniqueConstraint(columnNames = { "provider_id" }) })
 @Getter
 @Setter
 @NoArgsConstructor
+@AllArgsConstructor
+@Builder
 @SQLDelete(sql = "UPDATE invoices SET deleted_at = CURRENT_TIMESTAMP WHERE id=?")
 @SQLRestriction("deleted_at IS NULL")
 public class StripeInvoice {
@@ -87,38 +87,5 @@ public class StripeInvoice {
 
     @Column(name = "deleted_at")
     private Date deletedAt;
-
-    public StripeInvoice(
-            StripeCustomer customer,
-            String invoiceNumber,
-            String status,
-            String providerId,
-            Long amountDue,
-            Long amountPaid,
-            Long amountRemaining,
-            Long amountShipping,
-            Long subtotal,
-            Long subtotalExcludingTax,
-            Long total,
-            Long totalExcludingTax,
-            String billingReason,
-            Long daysExpire,
-            String metadata) {
-        this.customer = customer;
-        this.invoiceNumber = invoiceNumber;
-        this.status = status;
-        this.providerId = providerId;
-        this.amountDue = amountDue;
-        this.amountPaid = amountPaid;
-        this.amountRemaining = amountRemaining;
-        this.amountShipping = amountShipping;
-        this.subtotal = subtotal;
-        this.subtotalExcludingTax = subtotalExcludingTax;
-        this.total = total;
-        this.totalExcludingTax = totalExcludingTax;
-        this.billingReason = billingReason;
-        this.daysExpire = daysExpire;
-        this.metadata = metadata;
-    }
 
 }
