@@ -24,9 +24,9 @@ import org.hibernate.annotations.TenantId;
 @Table(name = "invoices", uniqueConstraints = { @UniqueConstraint(columnNames = { "provider_id" }) })
 @Getter
 @Setter
-@Builder
-@AllArgsConstructor
 @NoArgsConstructor
+@AllArgsConstructor
+@Builder
 @SQLDelete(sql = "UPDATE invoices SET deleted_at = CURRENT_TIMESTAMP WHERE id=?")
 @SQLRestriction("deleted_at IS NULL")
 public class StripeInvoice {

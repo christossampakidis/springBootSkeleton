@@ -88,12 +88,11 @@ public class InvoicesServiceImpl implements InvoicesService {
         } else {
             StripeCustomer customer = customerRepository.findByProviderId(object.getCustomer()).orElseThrow();
             invoiceRepository.save(StripeInvoice.builder()
+                    .customer(customer)
                     .invoiceNumber(object.getNumber())
                     .status(object.getStatus())
                     .providerId(object.getId())
-                    .customer(customer)
                     .amountDue(object.getAmountDue())
-                    .amountPaid(object.getAmountPaid())
                     .amountRemaining(object.getAmountRemaining())
                     .amountShipping(object.getAmountShipping())
                     .subtotal(object.getSubtotal())

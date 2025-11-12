@@ -52,9 +52,9 @@ public class AwsController {
     public ResponseEntity<ByteArrayResource> getFile(@PathVariable String fileName) throws IOException {
             var fileData = awsService.readFile(fileName);
             return ResponseEntity.ok()
-                    .contentType(MediaType.parseMediaType(fileData.getContentType()))
-                    .header("Content-Disposition", "inline; filename=\"" + fileData.getFileName() + "\"")
-                    .body(new ByteArrayResource(fileData.getContent()));
+                    .contentType(MediaType.parseMediaType(fileData.contentType()))
+                    .header("Content-Disposition", "inline; filename=\"" + fileData.fileName() + "\"")
+                    .body(new ByteArrayResource(fileData.content()));
     }
 
     /**

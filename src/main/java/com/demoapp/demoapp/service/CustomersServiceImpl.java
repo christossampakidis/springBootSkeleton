@@ -56,8 +56,7 @@ public class CustomersServiceImpl implements CustomersService {
         customerRepository.save(StripeCustomer.builder()
                 .email(stripeCustomer.getEmail())
                 .providerId(stripeCustomer.getId())
-                .build()
-        );
+                .build());
     }
 
     /**
