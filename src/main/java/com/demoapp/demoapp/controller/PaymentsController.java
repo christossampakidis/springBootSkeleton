@@ -59,7 +59,7 @@ public class PaymentsController {
      * @return {@link ResponseEntity} with success or error message
      */
     @PostMapping("/invoice")
-    @PreAuthorize("isAuthenticated()")
+//    @PreAuthorize("isAuthenticated()")
     public ResponseEntity<Map<String, String>> sendInvoice(@RequestBody @Valid InvoiceRequest invoiceRequest) throws Exception{
             PaymentProvider provider = paymentProviders.get(SELECTED_PROVIDER);
             provider.processInvoice(invoiceRequest);

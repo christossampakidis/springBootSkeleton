@@ -2,8 +2,11 @@ package com.demoapp.demoapp.service;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 
+import com.demoapp.demoapp.entity.StripeInvoice;
 import com.demoapp.demoapp.integration.kafka.Kafka;
+import com.demoapp.demoapp.repository.InvoiceRepository;
 import com.demoapp.demoapp.service.interfaces.PaymentProvider;
 import org.springframework.stereotype.Service;
 
@@ -19,8 +22,10 @@ public class StripeService implements PaymentProvider {
 
     private final StripeClient stripeClient;
     private final Kafka kafkaService;
+    private final InvoiceRepository invoiceRepository;
 
-    public StripeService(StripeClient stripeClient, Kafka kafkaService) {
+    public StripeService(StripeClient stripeClient, Kafka kafkaService, InvoiceRepository invoiceRepository) {
+        this.invoiceRepository = invoiceRepository;
         this.kafkaService = kafkaService;
         this.stripeClient = stripeClient;
     }
@@ -44,7 +49,11 @@ public class StripeService implements PaymentProvider {
      */
     @Override
     public void voidInvoice(Long invoiceId) throws Exception {
-        stripeClient.voidInvoice(invoiceId.toString());
+        Optional<StripeInvoice> invoice = invoiceRepository.findById(invoiceId);
+        if(invoice.isEmpty()) {
+            throw new Exception("Invoice with id " + invoiceId + " not found");
+        }
+        stripeClient.voidInvoice(invoice.get().getProviderId());
     }
 
     /**
