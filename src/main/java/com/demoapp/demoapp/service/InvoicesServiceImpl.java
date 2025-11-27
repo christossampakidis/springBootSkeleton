@@ -1,5 +1,6 @@
 package com.demoapp.demoapp.service;
 
+import java.time.Instant;
 import java.util.Optional;
 
 import com.demoapp.demoapp.service.interfaces.InvoicesService;
@@ -58,7 +59,8 @@ public class InvoicesServiceImpl implements InvoicesService {
                         invoice.getCustomer().getEmail(),
                         invoice.getInvoiceNumber(),
                         invoice.getCreatedAt(),
-                        invoice.getDaysExpire()));
+                        Instant.ofEpochSecond(invoice.getDaysExpire())
+                        ));
     }
 
 

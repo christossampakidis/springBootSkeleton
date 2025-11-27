@@ -1,6 +1,6 @@
 package com.demoapp.demoapp.entity;
 
-import java.util.Date;
+import java.time.Instant;
 
 import lombok.*;
 import org.hibernate.annotations.SQLDelete;
@@ -83,9 +83,9 @@ public class StripeInvoice {
 
     @Column(name = "created_at", insertable = false, updatable = false)
     @Temporal(TemporalType.TIMESTAMP)
-    private Date createdAt;
+    private Instant createdAt;
 
     @Column(name = "deleted_at")
-    private Date deletedAt;
+    private Instant deletedAt;
 
 }
