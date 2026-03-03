@@ -25,7 +25,10 @@ import com.stripe.param.InvoiceItemCreateParams;
 import com.stripe.param.InvoiceSendInvoiceParams;
 import com.stripe.param.PaymentIntentCreateParams;
 
+import lombok.RequiredArgsConstructor;
+
 @Component
+@RequiredArgsConstructor
 public class StripeClientImpl implements StripeClient {
 
     @Value("${stripe.key.secret}")
@@ -36,14 +39,6 @@ public class StripeClientImpl implements StripeClient {
     private final InvoiceRepository invoiceRepository;
 
     private final ItemRepository itemRepository;
-
-    public StripeClientImpl(CustomerRepository customerRepository,
-                            InvoiceRepository invoiceRepository,
-                            ItemRepository itemRepository) {
-        this.customerRepository = customerRepository;
-        this.invoiceRepository = invoiceRepository;
-        this.itemRepository = itemRepository;
-    }
 
     private void init() {
         Stripe.apiKey = API_SECRET_KEY;
@@ -83,7 +78,7 @@ public class StripeClientImpl implements StripeClient {
     }
 
     /**
-     *{@inheritDoc}
+     * {@inheritDoc}
      */
     @Override
     public Customer retrieveCustomer(String providerId) throws Exception {
@@ -107,8 +102,7 @@ public class StripeClientImpl implements StripeClient {
         invoiceRepository.save(StripeInvoice.builder()
                 .customer(customerRepository.findByProviderId(id).orElse(null))
                 .providerId(stripeInvoice.getId())
-                .build()
-        );
+                .build());
         return stripeInvoice;
     }
 
@@ -144,8 +138,7 @@ public class StripeClientImpl implements StripeClient {
                 .unitAmount(item.unitAmount())
                 .quantity(item.quantity())
                 .currency("EUR")
-                .build()
-        );
+                .build());
     }
 
     /**

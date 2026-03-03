@@ -17,16 +17,15 @@ import com.demoapp.demoapp.repository.InvoiceRepository;
 import com.stripe.model.Event;
 import com.stripe.model.StripeObject;
 
+import lombok.RequiredArgsConstructor;
+
 @Service
+@RequiredArgsConstructor
 public class InvoicesServiceImpl implements InvoicesService {
 
     private final InvoiceRepository invoiceRepository;
     private final CustomerRepository customerRepository;
 
-    public InvoicesServiceImpl(InvoiceRepository invoiceRepository, CustomerRepository customerRepository) {
-        this.invoiceRepository = invoiceRepository;
-        this.customerRepository = customerRepository;
-    }
 
     /**
      *

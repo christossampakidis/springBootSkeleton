@@ -5,6 +5,9 @@ import java.net.URLConnection;
 import java.util.List;
 
 import com.demoapp.demoapp.service.interfaces.AwsService;
+
+import lombok.RequiredArgsConstructor;
+
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
@@ -19,16 +22,13 @@ import software.amazon.awssdk.services.s3.S3Client;
 import software.amazon.awssdk.services.s3.model.*;
 
 @Service
+@RequiredArgsConstructor
 public class AwsServiceImpl implements AwsService {
 
     private final S3Client s3Client;
 
     @Value("${spring.cloud.aws.s3.bucket-name}")
     private String bucket_name;
-
-    public AwsServiceImpl(S3Client s3Client) {
-        this.s3Client = s3Client;
-    }
 
     /**
      * {@inheritDoc}

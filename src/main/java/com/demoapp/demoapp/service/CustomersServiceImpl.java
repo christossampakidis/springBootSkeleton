@@ -14,14 +14,13 @@ import com.stripe.model.Customer;
 import com.stripe.model.Event;
 import com.stripe.model.StripeObject;
 
+import lombok.RequiredArgsConstructor;
+
 @Service("customers")
+@RequiredArgsConstructor
 public class CustomersServiceImpl implements CustomersService {
 
     private final CustomerRepository customerRepository;
-
-    public CustomersServiceImpl(CustomerRepository customerRepository) {
-        this.customerRepository = customerRepository;
-    }
 
     /**
      * {@inheritDoc}

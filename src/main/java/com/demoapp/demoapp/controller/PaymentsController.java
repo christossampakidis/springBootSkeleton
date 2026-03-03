@@ -6,6 +6,8 @@ import com.demoapp.demoapp.model.dto.InvoiceDTO;
 import com.demoapp.demoapp.model.dto.PageDTO;
 import com.demoapp.demoapp.service.interfaces.InvoicesService;
 import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
@@ -17,6 +19,7 @@ import com.demoapp.demoapp.model.request.PaymentIntentRequest;
 import com.demoapp.demoapp.service.interfaces.PaymentProvider;
 
 @RestController
+@RequiredArgsConstructor
 @RequestMapping("/api/payments")
 @CrossOrigin(origins = "http://localhost:3000")
 public class PaymentsController {
@@ -25,11 +28,6 @@ public class PaymentsController {
     private final InvoicesService invoicesService;
 
     private final Map<String, PaymentProvider> paymentProviders;
-
-    public PaymentsController(InvoicesService invoicesService, @Autowired Map<String, PaymentProvider> paymentProviders) {
-        this.invoicesService = invoicesService;
-        this.paymentProviders = paymentProviders;
-    }
     /**
      * Fetches all invoices.
      * 

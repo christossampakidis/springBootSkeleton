@@ -19,15 +19,15 @@ import org.springframework.web.multipart.MultipartFile;
 import com.demoapp.demoapp.model.dto.S3FileDTO;
 import com.demoapp.demoapp.service.interfaces.AwsService;
 
+import lombok.RequiredArgsConstructor;
+
 @RestController
 @RequestMapping("/api/aws")
+@RequiredArgsConstructor
 public class AwsController {
 
     private final AwsService awsService;
 
-    public AwsController(AwsService awsService) {
-        this.awsService = awsService;
-    }
 
     /**
      * Uploads a file to AWS S3.

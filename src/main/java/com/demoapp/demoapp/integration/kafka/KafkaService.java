@@ -8,18 +8,19 @@ import org.springframework.kafka.core.KafkaAdmin;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 
+import lombok.RequiredArgsConstructor;
+
 import java.util.Collections;
 import java.util.concurrent.ExecutionException;
 
 
 @Service
+@RequiredArgsConstructor
 public class KafkaService implements Kafka {
+    
     private final KafkaTemplate<String, String> kafkaTemplate;
+
     private final AdminClient adminClient;
-    public KafkaService(KafkaTemplate<String, String> kafkaTemplate, KafkaAdmin kafkaAdmin) {
-        this.kafkaTemplate = kafkaTemplate;
-        this.adminClient = AdminClient.create(kafkaAdmin.getConfigurationProperties());
-    }
 
     @Override
     @KafkaListener(topics = "invoices", groupId = "crm")

@@ -17,18 +17,16 @@ import com.demoapp.demoapp.model.request.PaymentIntentRequest;
 import com.stripe.model.Customer;
 import com.stripe.model.Invoice;
 
+import lombok.RequiredArgsConstructor;
+
 @Service("stripe")
+@RequiredArgsConstructor
 public class StripeService implements PaymentProvider {
 
     private final StripeClient stripeClient;
     private final Kafka kafkaService;
     private final InvoiceRepository invoiceRepository;
 
-    public StripeService(StripeClient stripeClient, Kafka kafkaService, InvoiceRepository invoiceRepository) {
-        this.invoiceRepository = invoiceRepository;
-        this.kafkaService = kafkaService;
-        this.stripeClient = stripeClient;
-    }
 
     /**
      * {@inheritDoc}

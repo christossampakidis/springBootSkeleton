@@ -13,8 +13,11 @@ import com.demoapp.demoapp.service.InvoicesServiceImpl;
 import com.stripe.model.Event;
 import com.stripe.net.Webhook;
 
+import lombok.RequiredArgsConstructor;
+
 
 @RestController
+@RequiredArgsConstructor
 @RequestMapping("/webhooks")
 public class WebHookController {
     @Value("${stripe.webhook.secret}")
@@ -23,11 +26,6 @@ public class WebHookController {
     private final InvoicesServiceImpl invoicesService;
 
     private final CustomersService customersService;
-
-    public WebHookController(InvoicesServiceImpl invoicesService, CustomersService customersService) {
-        this.invoicesService = invoicesService;
-        this.customersService = customersService;
-    }
 
     /**
      * Handles Stripe webhook events related to invoices.
