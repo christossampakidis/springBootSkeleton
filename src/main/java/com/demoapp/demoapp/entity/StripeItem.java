@@ -18,14 +18,15 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import jakarta.persistence.Temporal;
 import jakarta.persistence.TemporalType;
+import org.hibernate.annotations.TenantId;
 
 @Entity
 @Table(name = "items")
 @Getter
 @Setter
-@NoArgsConstructor
-@AllArgsConstructor
 @Builder
+@AllArgsConstructor
+@NoArgsConstructor
 @SQLDelete(sql = "UPDATE items SET deleted_at = CURRENT_TIMESTAMP WHERE id=?")
 @SQLRestriction("deleted_at IS NULL")
 public class StripeItem {
@@ -60,5 +61,9 @@ public class StripeItem {
 
     @Column(name = "deleted_at")
     private Date deletedAt;
+
+    @TenantId
+    @Column(name = "tenant_id", nullable = false)
+    private String tenant;
 
 }

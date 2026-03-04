@@ -18,6 +18,7 @@ import jakarta.persistence.Table;
 import jakarta.persistence.Temporal;
 import jakarta.persistence.TemporalType;
 import jakarta.persistence.UniqueConstraint;
+import org.hibernate.annotations.TenantId;
 
 @Entity
 @Table(name = "invoices", uniqueConstraints = { @UniqueConstraint(columnNames = { "provider_id" }) })
@@ -87,5 +88,9 @@ public class StripeInvoice {
 
     @Column(name = "deleted_at")
     private Instant deletedAt;
+
+    @TenantId
+    @Column(name = "tenant_id", nullable = false)
+    private String tenant;
 
 }

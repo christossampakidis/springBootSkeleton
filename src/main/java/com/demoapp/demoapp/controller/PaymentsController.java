@@ -91,4 +91,16 @@ public class PaymentsController {
             Map<String, String> response = provider.createPaymentIntent(invoiceRequest);
             return ResponseEntity.ok(response);
     }
+
+    /**
+     * Creates a connect account.
+     *
+     * @return {@link ResponseEntity} with connect account data or error message
+     */
+    @PostMapping("/connect-account/create")
+//    @PreAuthorize("isAuthenticated()")
+    public ResponseEntity<Map<String, String>> createConnectAccount() throws Exception{
+        PaymentProvider provider = paymentProviders.get(SELECTED_PROVIDER);
+        return ResponseEntity.ok(Map.of("message", provider.createConnectAccount()));
+    }
 }

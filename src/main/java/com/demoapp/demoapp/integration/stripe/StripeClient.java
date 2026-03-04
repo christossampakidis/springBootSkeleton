@@ -2,9 +2,7 @@ package com.demoapp.demoapp.integration.stripe;
 
 import com.demoapp.demoapp.model.request.InvoiceRequest.ItemDTO;
 import com.demoapp.demoapp.model.request.PaymentIntentRequest;
-import com.stripe.model.Customer;
-import com.stripe.model.Invoice;
-import com.stripe.model.PaymentIntent;
+import com.stripe.model.*;
 
 public interface StripeClient {
 
@@ -68,4 +66,6 @@ public interface StripeClient {
      * @throws Exception if an error occurs during creation
      */
     PaymentIntent createPaymentIntent(PaymentIntentRequest request) throws Exception;
+
+    AccountSession createConnectAccount() throws Exception;
 }

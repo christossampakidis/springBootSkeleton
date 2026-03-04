@@ -16,6 +16,7 @@ import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import jakarta.persistence.Temporal;
 import jakarta.persistence.TemporalType;
+import org.hibernate.annotations.TenantId;
 
 @Entity
 @Table(name = "customers")
@@ -26,6 +27,7 @@ import jakarta.persistence.TemporalType;
 @Builder
 @SQLDelete(sql = "UPDATE customers SET deleted_at = CURRENT_TIMESTAMP WHERE id=?")
 @SQLRestriction("deleted_at IS NULL")
+
 public class StripeCustomer {
 
     @Id
@@ -57,4 +59,9 @@ public class StripeCustomer {
 
     @Column(name = "deleted_at")
     private Date deletedAt;
+
+    @TenantId
+    @Column(name = "tenant_id", nullable = false)
+    private String tenant;
+
 }

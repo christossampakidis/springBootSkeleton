@@ -8,6 +8,7 @@ create table
         provider_id varchar(255) not null,
         created_at timestamp NULL DEFAULT CURRENT_TIMESTAMP,
         deleted_at timestamp NULL,
+        tenant_id bigint NOT NULL,
         constraint provider_id_unique unique (provider_id)
     );
 
@@ -31,6 +32,7 @@ create table
         metadata JSON,
         created_at timestamp NULL DEFAULT CURRENT_TIMESTAMP,
         deleted_at timestamp NULL,
+        tenant_id bigint NOT NULL,
         constraint invoice_customer_id_fk foreign key (customer_id) references customers (id)
     );
 
@@ -45,5 +47,6 @@ create table
         quantity bigint,
         created_at timestamp NULL DEFAULT CURRENT_TIMESTAMP,
         deleted_at timestamp NULL,
+        tenant_id bigint NOT NULL,
         constraint items_invoice_id_fk foreign key (invoice_id) references invoices (id)
     );
