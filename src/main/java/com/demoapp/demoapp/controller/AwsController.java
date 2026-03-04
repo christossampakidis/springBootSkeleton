@@ -26,57 +26,71 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class AwsController {
 
-    private final AwsService awsService;
+        private final AwsService awsService;
 
+        /**
+         * Uploads a file to AWS S3.
+         * 
+         * @param file the {@link MultipartFile file} to upload
+         * @return {@link ResponseEntity} with success or error message
+         */
+        @PostMapping("s3/upload")
+        @PreAuthorize("isAuthenticated()")
+        public ResponseEntity<String> uploadFile(
+                        @RequestParam("file") MultipartFile file)
+                        throws IOException {
+                String objectKey = file.getOriginalFilename();
+                awsService.uploadFile(objectKey, file);
+                return ResponseEntity.ok("File uploaded successfully!");
+        }
 
-    /**
-     * Uploads a file to AWS S3.
-     * @param file the {@link MultipartFile file} to upload
-     * @return {@link ResponseEntity} with success or error message
-     */
-    @PostMapping("s3/upload")
-    @PreAuthorize("isAuthenticated()")
-    public ResponseEntity<String> uploadFile(@RequestParam("file") MultipartFile file) throws IOException {
-            String objectKey = file.getOriginalFilename();
-            awsService.uploadFile(objectKey, file);
-            return ResponseEntity.ok("File uploaded successfully!");
-    }
+        /**
+         * Downloads a file from AWS S3.
+         * 
+         * @param fileName the {@link String name} of the file to download
+         * @return {@link ResponseEntity} containing the file data or error
+         *         message
+         */
+        @GetMapping("s3/download/{fileName}")
+        @PreAuthorize("isAuthenticated()")
+        public ResponseEntity<ByteArrayResource> getFile(
+                        @PathVariable String fileName) throws IOException {
+                var fileData = awsService.readFile(fileName);
+                return ResponseEntity.ok()
+                                .contentType(MediaType.parseMediaType(
+                                                fileData.contentType()))
+                                .header("Content-Disposition",
+                                                "inline; filename=\"" + fileData
+                                                                .fileName()
+                                                                + "\"")
+                                .body(new ByteArrayResource(
+                                                fileData.content()));
+        }
 
-    /**
-     * Downloads a file from AWS S3.
-     * @param fileName the {@link String name} of the file to download
-     * @return {@link ResponseEntity} containing the file data or error message
-     */
-    @GetMapping("s3/download/{fileName}")
-    @PreAuthorize("isAuthenticated()")
-    public ResponseEntity<ByteArrayResource> getFile(@PathVariable String fileName) throws IOException {
-            var fileData = awsService.readFile(fileName);
-            return ResponseEntity.ok()
-                    .contentType(MediaType.parseMediaType(fileData.contentType()))
-                    .header("Content-Disposition", "inline; filename=\"" + fileData.fileName() + "\"")
-                    .body(new ByteArrayResource(fileData.content()));
-    }
+        /**
+         * Lists all files in AWS S3.
+         * 
+         * @return {@link ResponseEntity} containing a list of files
+         */
+        @GetMapping("s3/list")
+        @PreAuthorize("isAuthenticated()")
+        public ResponseEntity<List<S3FileDTO>> getFiles(@RequestParam(
+                        required = false, defaultValue = "") String query) {
+                var fileData = awsService.getFileList(query);
+                return ResponseEntity.ok(fileData);
+        }
 
-    /**
-     * Lists all files in AWS S3.
-     * @return {@link ResponseEntity} containing a list of files
-     */
-    @GetMapping("s3/list")
-    @PreAuthorize("isAuthenticated()")
-    public ResponseEntity<List<S3FileDTO>> getFiles(@RequestParam(required = false, defaultValue = "") String query) {
-        var fileData = awsService.getFileList(query);
-        return ResponseEntity.ok(fileData);
-    }
-
-    /**
-     * Deletes a file from AWS S3.
-     * @param fileName the {@link String name} of the file to delete
-     * @return {@link ResponseEntity} with success or error message
-     */
-    @DeleteMapping("s3/delete/{fileName}")
-    @PreAuthorize("isAuthenticated()")
-    public ResponseEntity<String> deleteFile(@PathVariable String fileName) {
-            awsService.deleteFile(fileName);
-            return ResponseEntity.ok("File deleted successfully!");
-    }
+        /**
+         * Deletes a file from AWS S3.
+         * 
+         * @param fileName the {@link String name} of the file to delete
+         * @return {@link ResponseEntity} with success or error message
+         */
+        @DeleteMapping("s3/delete/{fileName}")
+        @PreAuthorize("isAuthenticated()")
+        public ResponseEntity<String> deleteFile(
+                        @PathVariable String fileName) {
+                awsService.deleteFile(fileName);
+                return ResponseEntity.ok("File deleted successfully!");
+        }
 }

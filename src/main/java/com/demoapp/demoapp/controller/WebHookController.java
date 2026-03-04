@@ -10,11 +10,11 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.demoapp.demoapp.service.InvoicesServiceImpl;
+import com.stripe.exception.SignatureVerificationException;
 import com.stripe.model.Event;
 import com.stripe.net.Webhook;
 
 import lombok.RequiredArgsConstructor;
-
 
 @RestController
 @RequiredArgsConstructor
@@ -35,11 +35,13 @@ public class WebHookController {
      * @return {@link ResponseEntity} with status
      */
     @PostMapping("/invoices")
-    public ResponseEntity<String> handleInvoiceEvents(@RequestBody String payload,
-            @RequestHeader("Stripe-Signature") String sigHeader) throws  Exception{
+    public ResponseEntity<String> handleInvoiceEvents(
+            @RequestBody String payload,
+            @RequestHeader("Stripe-Signature") String sigHeader)
+            throws SignatureVerificationException {
         Event event;
-            event = Webhook.constructEvent(payload, sigHeader, endpointSecret);
-            invoicesService.handleEvent(event);
+        event = Webhook.constructEvent(payload, sigHeader, endpointSecret);
+        invoicesService.handleEvent(event);
 
         return ResponseEntity.ok("");
     }
@@ -52,11 +54,13 @@ public class WebHookController {
      * @return {@link ResponseEntity} with status
      */
     @PostMapping("/customers")
-    public ResponseEntity<String> handleCustomerEvents(@RequestBody String payload,
-            @RequestHeader("Stripe-Signature") String sigHeader) throws  Exception{
+    public ResponseEntity<String> handleCustomerEvents(
+            @RequestBody String payload,
+            @RequestHeader("Stripe-Signature") String sigHeader)
+            throws SignatureVerificationException {
         Event event;
-            event = Webhook.constructEvent(payload, sigHeader, endpointSecret);
-            customersService.handleEvent(event);
+        event = Webhook.constructEvent(payload, sigHeader, endpointSecret);
+        customersService.handleEvent(event);
         return ResponseEntity.ok("");
     }
 

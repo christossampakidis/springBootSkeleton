@@ -1,4 +1,17 @@
 {
     "java.jdt.ls.vmargs": "-noverify -Xmx8G -XX:+UseG1GC -XX:+UseStringDeduplication",
-    "java.compile.nullAnalysis.mode": "disabled"
+    "java.compile.nullAnalysis.mode": "disabled",
+    "editor.defaultFormatter": "redhat.java",
+    "java.format.settings.url": "eclipse-java-google-style.xml",
+    "java.format.settings.profile": "GoogleStyle",
+    "sonarlint.connectedMode.project": {
+        "connectionId": "christossampakidis",
+        "projectKey": "christossampakidis_springBootSkeleton"
+    },
+    "java.project.referencedLibraries": [
+
+    ],
+    "[java]": {
+        "editor.tabSize": 4
+    }
 }

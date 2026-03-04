@@ -13,11 +13,11 @@ import com.demoapp.demoapp.model.request.PaymentIntentRequest;
 import com.demoapp.demoapp.repository.CustomerRepository;
 import com.demoapp.demoapp.repository.InvoiceRepository;
 import com.demoapp.demoapp.repository.ItemRepository;
-import com.stripe.Stripe;
 import com.stripe.model.Customer;
 import com.stripe.model.Invoice;
 import com.stripe.model.InvoiceItem;
 import com.stripe.model.PaymentIntent;
+import com.stripe.net.RequestOptions;
 import com.stripe.param.CustomerCreateParams;
 import com.stripe.param.CustomerListParams;
 import com.stripe.param.InvoiceCreateParams;
@@ -32,16 +32,18 @@ import lombok.RequiredArgsConstructor;
 public class StripeClientImpl implements StripeClient {
 
     @Value("${stripe.key.secret}")
-    private String API_SECRET_KEY;
+    private String apiSecretKey;
 
     private final CustomerRepository customerRepository;
-
     private final InvoiceRepository invoiceRepository;
-
     private final ItemRepository itemRepository;
 
-    private void init() {
-        Stripe.apiKey = API_SECRET_KEY;
+    /**
+     * Helper to provide request-specific configuration, avoiding global static
+     * state warnings.
+     */
+    private RequestOptions getOptions() {
+        return RequestOptions.builder().setApiKey(apiSecretKey).build();
     }
 
     /**
@@ -49,31 +51,32 @@ public class StripeClientImpl implements StripeClient {
      */
     @Override
     public Customer createCustomer(String email) throws Exception {
-        init();
-        StripeCustomer localCustomer = customerRepository.findByEmail(email).orElse(null);
+        StripeCustomer localCustomer =
+                customerRepository.findByEmail(email).orElse(null);
+
         if (localCustomer == null) {
             CustomerListParams params = CustomerListParams.builder()
-                    .setEmail(email)
-                    .setLimit(1L)
-                    .build();
-            List<Customer> customers = Customer.list(params).getData();
+                    .setEmail(email).setLimit(1L).build();
+
+            List<Customer> customers =
+                    Customer.list(params, getOptions()).getData();
             Customer customer;
+
             if (!customers.isEmpty()) {
-                customer = customers.getFirst();
+                customer = customers.get(0);
             } else {
-                CustomerCreateParams createParams = CustomerCreateParams.builder()
-                        .setEmail(email)
-                        .setDescription("Customer for " + email)
-                        .build();
-                customer = Customer.create(createParams);
+                CustomerCreateParams createParams = CustomerCreateParams
+                        .builder().setEmail(email)
+                        .setDescription("Customer for " + email).build();
+                customer = Customer.create(createParams, getOptions());
             }
-            customerRepository.save(StripeCustomer.builder()
-                    .email(email)
-                    .providerId(customer.getId())
-                    .build());
+
+            customerRepository.save(StripeCustomer.builder().email(email)
+                    .providerId(customer.getId()).build());
             return customer;
         } else {
-            return Customer.retrieve(localCustomer.getProviderId());
+            return Customer.retrieve(localCustomer.getProviderId(),
+                    getOptions());
         }
     }
 
@@ -82,8 +85,7 @@ public class StripeClientImpl implements StripeClient {
      */
     @Override
     public Customer retrieveCustomer(String providerId) throws Exception {
-        init();
-        return Customer.retrieve(providerId);
+        return Customer.retrieve(providerId, getOptions());
     }
 
     /**
@@ -91,18 +93,18 @@ public class StripeClientImpl implements StripeClient {
      */
     @Override
     public Invoice createInvoice(Customer customer) throws Exception {
-        init();
         String id = customer.getId();
         InvoiceCreateParams invoiceParams = InvoiceCreateParams.builder()
                 .setCustomer(id)
-                .setCollectionMethod(InvoiceCreateParams.CollectionMethod.SEND_INVOICE)
-                .setDaysUntilDue(30L)
-                .build();
-        Invoice stripeInvoice = Invoice.create(invoiceParams);
+                .setCollectionMethod(
+                        InvoiceCreateParams.CollectionMethod.SEND_INVOICE)
+                .setDaysUntilDue(30L).build();
+
+        Invoice stripeInvoice = Invoice.create(invoiceParams, getOptions());
+
         invoiceRepository.save(StripeInvoice.builder()
                 .customer(customerRepository.findByProviderId(id).orElse(null))
-                .providerId(stripeInvoice.getId())
-                .build());
+                .providerId(stripeInvoice.getId()).build());
         return stripeInvoice;
     }
 
@@ -111,34 +113,34 @@ public class StripeClientImpl implements StripeClient {
      */
     @Override
     public void sendInvoice(Invoice invoice) throws Exception {
-        InvoiceSendInvoiceParams invoiceSendParams = InvoiceSendInvoiceParams.builder().build();
-        invoice.sendInvoice(invoiceSendParams);
+        InvoiceSendInvoiceParams invoiceSendParams =
+                InvoiceSendInvoiceParams.builder().build();
+        // Instance methods on models also accept RequestOptions
+        invoice.sendInvoice(invoiceSendParams, getOptions());
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public void createInvoiceItem(Customer customer, Invoice invoice, ItemDTO item) throws Exception {
-        init();
-        InvoiceItemCreateParams invoiceItemParams = InvoiceItemCreateParams.builder()
-                .setDescription(item.description())
+    public void createInvoiceItem(Customer customer, Invoice invoice,
+            ItemDTO item) throws Exception {
+        InvoiceItemCreateParams invoiceItemParams = InvoiceItemCreateParams
+                .builder().setDescription(item.description())
                 .setCustomer(customer.getId())
                 .setUnitAmountDecimal(item.unitAmount())
-                .setInvoice(invoice.getId())
-                .setCurrency("EUR")
-                .setQuantity(item.quantity())
-                .build();
-        InvoiceItem stripeItem = InvoiceItem.create(invoiceItemParams);
+                .setInvoice(invoice.getId()).setCurrency("EUR")
+                .setQuantity(item.quantity()).build();
+
+        InvoiceItem stripeItem =
+                InvoiceItem.create(invoiceItemParams, getOptions());
 
         itemRepository.save(StripeItem.builder()
-                .invoice(invoiceRepository.findByProviderId(invoice.getId()).orElse(null))
-                .providerId(stripeItem.getId())
-                .description(item.description())
-                .unitAmount(item.unitAmount())
-                .quantity(item.quantity())
-                .currency("EUR")
-                .build());
+                .invoice(invoiceRepository.findByProviderId(invoice.getId())
+                        .orElse(null))
+                .providerId(stripeItem.getId()).description(item.description())
+                .unitAmount(item.unitAmount()).quantity(item.quantity())
+                .currency("EUR").build());
     }
 
     /**
@@ -146,35 +148,33 @@ public class StripeClientImpl implements StripeClient {
      */
     @Override
     public void voidInvoice(String invoiceId) throws Exception {
-        init();
-        Invoice stripeInvoice = Invoice.retrieve(invoiceId);
-        stripeInvoice.voidInvoice();
+        Invoice stripeInvoice = Invoice.retrieve(invoiceId, getOptions());
+        stripeInvoice.voidInvoice(getOptions());
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public PaymentIntent createPaymentIntent(PaymentIntentRequest request) throws Exception {
-        init();
+    public PaymentIntent createPaymentIntent(PaymentIntentRequest request)
+            throws Exception {
         Customer stripeCustomer;
         String email = request.email();
 
-        StripeCustomer customer = customerRepository.findByEmail(email).orElse(null);
+        StripeCustomer customer =
+                customerRepository.findByEmail(email).orElse(null);
         if (customer == null) {
             stripeCustomer = createCustomer(email);
         } else {
             stripeCustomer = retrieveCustomer(customer.getProviderId());
         }
 
-        PaymentIntentCreateParams params = PaymentIntentCreateParams.builder()
-                .setAmount(request.amount())
-                .setCurrency("eur")
-                .setCustomer(stripeCustomer.getId())
-                .addPaymentMethodType("card")
-                .addPaymentMethodType("paypal")
-                .build();
+        PaymentIntentCreateParams params =
+                PaymentIntentCreateParams.builder().setAmount(request.amount())
+                        .setCurrency("eur").setCustomer(stripeCustomer.getId())
+                        .addPaymentMethodType("card")
+                        .addPaymentMethodType("paypal").build();
 
-        return PaymentIntent.create(params);
+        return PaymentIntent.create(params, getOptions());
     }
 }

@@ -10,7 +10,8 @@ public interface PaymentProvider {
     /**
      * Processes an invoice based on the provided invoice request.
      * 
-     * @param invoiceRequest the {@link InvoiceRequest} containing invoice details
+     * @param invoiceRequest the {@link InvoiceRequest} containing invoice
+     *        details
      * @throws Exception if an error occurs during processing
      */
     void processInvoice(InvoiceRequest invoiceRequest) throws Exception;
@@ -26,9 +27,11 @@ public interface PaymentProvider {
     /**
      * Creates a payment intent.
      * 
-     * @param paymentIntentRequest the {@link PaymentIntentRequest} containing payment intent details
+     * @param paymentIntentRequest the {@link PaymentIntentRequest} containing
+     *        payment intent details
      * @return a {@link Map} with payment intent information
      * @throws Exception if an error occurs during creation
      */
-    Map<String, String> createPaymentIntent(PaymentIntentRequest paymentIntentRequest) throws Exception;
+    Map<String, String> createPaymentIntent(
+            PaymentIntentRequest paymentIntentRequest) throws Exception;
 }

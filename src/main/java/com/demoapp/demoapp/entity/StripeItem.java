@@ -21,8 +21,7 @@ import jakarta.persistence.TemporalType;
 
 @Entity
 @Table(name = "items")
-@Getter
-@Setter
+@Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder

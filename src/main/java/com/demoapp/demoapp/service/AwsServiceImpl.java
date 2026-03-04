@@ -28,15 +28,15 @@ public class AwsServiceImpl implements AwsService {
     private final S3Client s3Client;
 
     @Value("${spring.cloud.aws.s3.bucket-name}")
-    private String bucket_name;
+    private String bucketName;
 
     /**
      * {@inheritDoc}
      */
     @Override
     public FileDTO readFile(String objectKey) throws IOException {
-        try (ResponseInputStream<GetObjectResponse> response = s3Client.getObject(
-                req -> req.bucket(bucket_name).key(objectKey))) {
+        try (ResponseInputStream<GetObjectResponse> response = s3Client
+                .getObject(req -> req.bucket(bucketName).key(objectKey))) {
 
             byte[] bytes = response.readAllBytes();
 
@@ -51,8 +51,8 @@ public class AwsServiceImpl implements AwsService {
             return new FileDTO(bytes, contentType, objectKey);
 
         } catch (NoSuchKeyException e) {
-            throw new RuntimeException(
-                    "Object '" + objectKey + "' does not exist in bucket '" + bucket_name + "'!", e);
+            throw new RuntimeException("Object '" + objectKey
+                    + "' does not exist in bucket '" + bucketName + "'!", e);
         }
     }
 
@@ -60,21 +60,21 @@ public class AwsServiceImpl implements AwsService {
      * {@inheritDoc}
      */
     @Override
-    public void uploadFile(String objectKey, MultipartFile file) throws IOException {
+    public void uploadFile(String objectKey, MultipartFile file)
+            throws IOException {
         String contentType = file.getContentType();
         if (contentType == null || contentType.isBlank()) {
-            contentType = URLConnection.guessContentTypeFromName(file.getOriginalFilename());
+            contentType = URLConnection
+                    .guessContentTypeFromName(file.getOriginalFilename());
         }
         if (contentType == null) {
             contentType = MediaType.APPLICATION_OCTET_STREAM_VALUE;
         }
 
-        PutObjectRequest request = PutObjectRequest.builder()
-                .bucket(bucket_name)
-                .key(objectKey)
-                .acl(ObjectCannedACL.PUBLIC_READ)
-                .contentType(contentType)
-                .build();
+        PutObjectRequest request =
+                PutObjectRequest.builder().bucket(bucketName).key(objectKey)
+                        .acl(ObjectCannedACL.PUBLIC_READ)
+                        .contentType(contentType).build();
 
         s3Client.putObject(request, RequestBody.fromBytes(file.getBytes()));
     }
@@ -85,17 +85,12 @@ public class AwsServiceImpl implements AwsService {
     @Override
     public List<S3FileDTO> getFileList(String query) {
         ListObjectsV2Request request = ListObjectsV2Request.builder()
-                .bucket(bucket_name)
-                .prefix(query)
-                .build();
+                .bucket(bucketName).prefix(query).build();
 
         ListObjectsV2Response response = s3Client.listObjectsV2(request);
 
-        return response.contents().stream()
-                .map(obj -> new S3FileDTO(
-                        obj.key(),
-                        obj.size(),
-                        obj.lastModified()))
+        return response.contents().stream().map(
+                obj -> new S3FileDTO(obj.key(), obj.size(), obj.lastModified()))
                 .toList();
     }
 
@@ -104,7 +99,7 @@ public class AwsServiceImpl implements AwsService {
      */
     @Override
     public void deleteFile(String objectKey) {
-        s3Client.deleteObject(req -> req.bucket(bucket_name).key(objectKey));
+        s3Client.deleteObject(req -> req.bucket(bucketName).key(objectKey));
     }
 
 }

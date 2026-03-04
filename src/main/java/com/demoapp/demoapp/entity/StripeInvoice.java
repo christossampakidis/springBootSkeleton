@@ -20,13 +20,14 @@ import jakarta.persistence.TemporalType;
 import jakarta.persistence.UniqueConstraint;
 
 @Entity
-@Table(name = "invoices", uniqueConstraints = { @UniqueConstraint(columnNames = { "provider_id" }) })
-@Getter
-@Setter
+@Table(name = "invoices",
+        uniqueConstraints = {@UniqueConstraint(columnNames = {"provider_id"})})
+@Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-@SQLDelete(sql = "UPDATE invoices SET deleted_at = CURRENT_TIMESTAMP WHERE id=?")
+@SQLDelete(
+        sql = "UPDATE invoices SET deleted_at = CURRENT_TIMESTAMP WHERE id=?")
 @SQLRestriction("deleted_at IS NULL")
 public class StripeInvoice {
 

@@ -8,7 +8,8 @@ import org.springframework.stereotype.Repository;
 import com.demoapp.demoapp.entity.StripeCustomer;
 
 @Repository
-public interface CustomerRepository extends JpaRepository<StripeCustomer, Long> {
+public interface CustomerRepository
+        extends JpaRepository<StripeCustomer, Long> {
     Optional<StripeCustomer> findByEmail(String email);
 
     Optional<StripeCustomer> findByProviderId(String providerId);

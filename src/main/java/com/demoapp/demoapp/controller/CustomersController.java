@@ -13,7 +13,6 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/customers")
@@ -30,6 +29,7 @@ public class CustomersController {
     @GetMapping
     @PreAuthorize("isAuthenticated()")
     public ResponseEntity<Map<String, Object>> getCustomers() {
-            return ResponseEntity.ok(Map.of("message", customersService.fetchCustomers()));
+        return ResponseEntity
+                .ok(Map.of("message", customersService.fetchCustomers()));
     }
 }

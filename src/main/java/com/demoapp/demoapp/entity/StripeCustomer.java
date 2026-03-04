@@ -19,12 +19,12 @@ import jakarta.persistence.TemporalType;
 
 @Entity
 @Table(name = "customers")
-@Getter
-@Setter
+@Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-@SQLDelete(sql = "UPDATE customers SET deleted_at = CURRENT_TIMESTAMP WHERE id=?")
+@SQLDelete(
+        sql = "UPDATE customers SET deleted_at = CURRENT_TIMESTAMP WHERE id=?")
 @SQLRestriction("deleted_at IS NULL")
 public class StripeCustomer {
 

@@ -22,7 +22,8 @@ public interface AwsService {
     /**
      * Uploads a file to the specified S3 bucket with the given object key.
      * 
-     * @param objectKey the {@link String key} under which to store the new object
+     * @param objectKey the {@link String key} under which to store the new
+     *        object
      * @param file the {@link MultipartFile file} to upload
      * @throws IOException if an I/O error occurs during file upload
      */

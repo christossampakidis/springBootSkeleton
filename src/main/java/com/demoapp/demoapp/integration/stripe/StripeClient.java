@@ -11,16 +11,17 @@ public interface StripeClient {
     /**
      * Creates or retrieves a Stripe customer by email.
      * 
-     * @param email the {@link String email}  of the customer
-     * @return the Stripe {@link Customer}  object
+     * @param email the {@link String email} of the customer
+     * @return the Stripe {@link Customer} object
      * @throws Exception if an error occurs during creation or retrieval
      */
     Customer createCustomer(String email) throws Exception;
 
     /**
      * Returns the customer object from stripe
-     * @param providerId the provider {@link String ID}  of the customer
-     * @return the Stripe {@link Customer}  object
+     * 
+     * @param providerId the provider {@link String ID} of the customer
+     * @return the Stripe {@link Customer} object
      * @throws Exception if an error occurs during retrieval
      */
     Customer retrieveCustomer(String providerId) throws Exception;
@@ -28,7 +29,7 @@ public interface StripeClient {
     /**
      * Creates a Stripe invoice for the given customer.
      * 
-     * @param customer the Stripe {@link Customer}  object
+     * @param customer the Stripe {@link Customer} object
      * @return the Stripe {@link Invoice} object
      * @throws Exception if an error occurs during creation
      */
@@ -50,7 +51,8 @@ public interface StripeClient {
      * @param item the {@link ItemDTO} details
      * @throws Exception if an error occurs during creation
      */
-    void createInvoiceItem(Customer customer, Invoice invoice, ItemDTO item) throws Exception;
+    void createInvoiceItem(Customer customer, Invoice invoice, ItemDTO item)
+            throws Exception;
 
     /**
      * Voids a Stripe invoice by its ID.
@@ -63,9 +65,11 @@ public interface StripeClient {
     /**
      * Creates a Stripe payment intent based on the provided request.
      * 
-     * @param request the {@link PaymentIntentRequest PaymentIntentRequest} details
-     * @return the Stripe {@link PaymentIntent PaymentIntent}  object
+     * @param request the {@link PaymentIntentRequest PaymentIntentRequest}
+     *        details
+     * @return the Stripe {@link PaymentIntent PaymentIntent} object
      * @throws Exception if an error occurs during creation
      */
-    PaymentIntent createPaymentIntent(PaymentIntentRequest request) throws Exception;
+    PaymentIntent createPaymentIntent(PaymentIntentRequest request)
+            throws Exception;
 }

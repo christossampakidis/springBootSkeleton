@@ -18,14 +18,15 @@ import com.stripe.model.Event;
 import com.stripe.model.StripeObject;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class InvoicesServiceImpl implements InvoicesService {
 
     private final InvoiceRepository invoiceRepository;
     private final CustomerRepository customerRepository;
-
 
     /**
      *
@@ -35,12 +36,14 @@ public class InvoicesServiceImpl implements InvoicesService {
     public void handleEvent(Event event) {
         switch (event.getType()) {
             case "invoice.updated", "invoice.created", "invoice.finalized" -> {
-                Optional<StripeObject> deserializer = event.getDataObjectDeserializer().getObject();
-                if (deserializer.isPresent() && deserializer.get() instanceof com.stripe.model.Invoice stripeInvoice) {
+                Optional<StripeObject> deserializer =
+                        event.getDataObjectDeserializer().getObject();
+                if (deserializer.isPresent() && deserializer
+                        .get() instanceof com.stripe.model.Invoice stripeInvoice) {
                     this.updateInvoice(stripeInvoice);
                 }
             }
-            default -> System.out.println("Unhandled event type: " + event.getType());
+            default -> log.warn("Unhandled event type: {}", event.getType());
         }
     }
 
@@ -52,16 +55,11 @@ public class InvoicesServiceImpl implements InvoicesService {
     public Page<InvoiceDTO> fetchInvoices(int page, int size) {
         Pageable pageable = PageRequest.of(page, size);
         return invoiceRepository.findAll(pageable)
-                .map(invoice -> new InvoiceDTO(
-                        invoice.getId(),
-                        invoice.getStatus(),
-                        invoice.getCustomer().getEmail(),
-                        invoice.getInvoiceNumber(),
-                        invoice.getCreatedAt(),
-                        Instant.ofEpochSecond(invoice.getDaysExpire())
-                        ));
+                .map(invoice -> new InvoiceDTO(invoice.getId(),
+                        invoice.getStatus(), invoice.getCustomer().getEmail(),
+                        invoice.getInvoiceNumber(), invoice.getCreatedAt(),
+                        Instant.ofEpochSecond(invoice.getDaysExpire())));
     }
-
 
     /**
      *
@@ -69,7 +67,8 @@ public class InvoicesServiceImpl implements InvoicesService {
      */
     @Override
     public void updateInvoice(com.stripe.model.Invoice object) {
-        Optional<StripeInvoice> invoice = invoiceRepository.findByProviderId(object.getId());
+        Optional<StripeInvoice> invoice =
+                invoiceRepository.findByProviderId(object.getId());
         if (invoice.isPresent()) {
             StripeInvoice existingInvoice = invoice.get();
             existingInvoice.setInvoiceNumber(object.getNumber());
@@ -79,7 +78,8 @@ public class InvoicesServiceImpl implements InvoicesService {
             existingInvoice.setAmountRemaining(object.getAmountRemaining());
             existingInvoice.setAmountShipping(object.getAmountShipping());
             existingInvoice.setSubtotal(object.getSubtotal());
-            existingInvoice.setSubtotalExcludingTax(object.getSubtotalExcludingTax());
+            existingInvoice
+                    .setSubtotalExcludingTax(object.getSubtotalExcludingTax());
             existingInvoice.setTotal(object.getTotal());
             existingInvoice.setTotalExcludingTax(object.getTotalExcludingTax());
             existingInvoice.setBillingReason(object.getBillingReason());
@@ -87,12 +87,11 @@ public class InvoicesServiceImpl implements InvoicesService {
             existingInvoice.setMetadata(object.toJson());
             invoiceRepository.save(existingInvoice);
         } else {
-            StripeCustomer customer = customerRepository.findByProviderId(object.getCustomer()).orElseThrow();
-            invoiceRepository.save(StripeInvoice.builder()
-                    .customer(customer)
+            StripeCustomer customer = customerRepository
+                    .findByProviderId(object.getCustomer()).orElseThrow();
+            invoiceRepository.save(StripeInvoice.builder().customer(customer)
                     .invoiceNumber(object.getNumber())
-                    .status(object.getStatus())
-                    .providerId(object.getId())
+                    .status(object.getStatus()).providerId(object.getId())
                     .amountDue(object.getAmountDue())
                     .amountRemaining(object.getAmountRemaining())
                     .amountShipping(object.getAmountShipping())
@@ -101,8 +100,7 @@ public class InvoicesServiceImpl implements InvoicesService {
                     .total(object.getTotal())
                     .totalExcludingTax(object.getTotalExcludingTax())
                     .billingReason(object.getBillingReason())
-                    .daysExpire(object.getDueDate())
-                    .metadata(object.toJson())
+                    .daysExpire(object.getDueDate()).metadata(object.toJson())
                     .build());
         }
 

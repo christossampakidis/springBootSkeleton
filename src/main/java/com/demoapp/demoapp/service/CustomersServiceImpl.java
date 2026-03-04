@@ -15,9 +15,11 @@ import com.stripe.model.Event;
 import com.stripe.model.StripeObject;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 @Service("customers")
 @RequiredArgsConstructor
+@Slf4j
 public class CustomersServiceImpl implements CustomersService {
 
     private final CustomerRepository customerRepository;
@@ -28,21 +30,22 @@ public class CustomersServiceImpl implements CustomersService {
     @Override
     public List<CustomerDTO> fetchCustomers() {
         return customerRepository.findAll().stream()
-                .map(customer -> new CustomerDTO(
-                        customer.getId(),
-                        customer.getEmail(),
-                        customer.getCreatedAt()))
+                .map(customer -> new CustomerDTO(customer.getId(),
+                        customer.getEmail(), customer.getCreatedAt()))
                 .toList();
     }
 
     @Transactional
     public void handleEvent(Event event) {
-        Optional<StripeObject> deserializer = event.getDataObjectDeserializer().getObject();
-        if (deserializer.isPresent() && deserializer.get() instanceof Customer stripeCustomer) {
+        Optional<StripeObject> deserializer =
+                event.getDataObjectDeserializer().getObject();
+        if (deserializer.isPresent()
+                && deserializer.get() instanceof Customer stripeCustomer) {
             switch (event.getType()) {
                 case "customer.created" -> this.createCustomer(stripeCustomer);
                 case "customer.deleted" -> this.deleteCustomer(stripeCustomer);
-                default -> System.out.println("Unhandled event type: " + event.getType());
+                default -> log.warn("Unhandled event type: {}",
+                        event.getType());
             }
         }
     }
@@ -52,10 +55,9 @@ public class CustomersServiceImpl implements CustomersService {
      */
     @Override
     public void createCustomer(Customer stripeCustomer) {
-        customerRepository.save(StripeCustomer.builder()
-                .email(stripeCustomer.getEmail())
-                .providerId(stripeCustomer.getId())
-                .build());
+        customerRepository
+                .save(StripeCustomer.builder().email(stripeCustomer.getEmail())
+                        .providerId(stripeCustomer.getId()).build());
     }
 
     /**

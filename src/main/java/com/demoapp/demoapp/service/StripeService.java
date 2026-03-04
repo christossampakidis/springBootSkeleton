@@ -48,7 +48,7 @@ public class StripeService implements PaymentProvider {
     @Override
     public void voidInvoice(Long invoiceId) throws Exception {
         Optional<StripeInvoice> invoice = invoiceRepository.findById(invoiceId);
-        if(invoice.isEmpty()) {
+        if (invoice.isEmpty()) {
             throw new Exception("Invoice with id " + invoiceId + " not found");
         }
         stripeClient.voidInvoice(invoice.get().getProviderId());
@@ -58,12 +58,15 @@ public class StripeService implements PaymentProvider {
      * {@inheritDoc}
      */
     @Override
-    public Map<String, String> createPaymentIntent(PaymentIntentRequest paymentIntentRequest) throws Exception {
+    public Map<String, String> createPaymentIntent(
+            PaymentIntentRequest paymentIntentRequest) throws Exception {
         Map<String, String> response = new HashMap<>();
-        var paymentIntentResult = stripeClient.createPaymentIntent(paymentIntentRequest);
+        var paymentIntentResult =
+                stripeClient.createPaymentIntent(paymentIntentRequest);
         response.put("client_secret", paymentIntentResult.getClientSecret());
         if (paymentIntentResult.getClientSecret() != null) {
-            response.put("customerSessionClientSecret", paymentIntentResult.getClientSecret());
+            response.put("customerSessionClientSecret",
+                    paymentIntentResult.getClientSecret());
         }
 
         return response;
