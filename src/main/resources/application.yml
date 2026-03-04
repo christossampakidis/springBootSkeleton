@@ -34,13 +34,13 @@ spring:
         bucket-name: ${AWS_S3_BUCKET}
   servlet:
     multipart:
-      max-file-size: 80MB
-      max-request-size: 80MB
+      max-file-size: 8MB
+      max-request-size: 8MB
 
 
 server:
   tomcat:
-    max-swallow-size: 80MB
+    max-swallow-size: 8MB
   error:
     include-stacktrace: never
     include-message: never
